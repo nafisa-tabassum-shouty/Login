@@ -25,9 +25,19 @@
 
                 <div id="error-message" class="hidden text-red-500 text-sm font-medium text-center"></div>
 
-                <button type="submit"
-                    class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
-                    Verify Code
+                <button type="submit" id="submit-btn"
+                    class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed">
+                    <span id="btn-text">Verify Code</span>
+                    <div id="btn-spinner" class="hidden ml-2">
+                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                    </div>
                 </button>
             </form>
 
@@ -52,12 +62,20 @@
 
         const form = document.getElementById('verify-otp-form');
         const errorDiv = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorDiv.classList.add('hidden');
 
             const otp = form.otp.value;
+
+            // Loading state
+            submitBtn.disabled = true;
+            btnText.textContent = 'Verifying...';
+            btnSpinner.classList.remove('hidden');
 
             try {
                 const res = await fetch('/verify-otp', {
@@ -73,14 +91,28 @@
                     const text = await res.text();
                     errorDiv.textContent = text || 'Invalid or expired OTP';
                     errorDiv.classList.remove('hidden');
+
+                    // Reset loading state
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Verify Code';
+                    btnSpinner.classList.add('hidden');
                 }
             } catch (err) {
                 errorDiv.textContent = 'An error occurred. Please try again.';
                 errorDiv.classList.remove('hidden');
+
+                // Reset loading state
+                submitBtn.disabled = false;
+                btnText.textContent = 'Verify Code';
+                btnSpinner.classList.add('hidden');
             }
         });
 
         document.getElementById('resend-btn').addEventListener('click', async () => {
+            const resendBtn = document.getElementById('resend-btn');
+            resendBtn.disabled = true;
+            resendBtn.textContent = 'Resending...';
+
             try {
                 const res = await fetch('/forgot-password', {
                     method: 'POST',
@@ -94,6 +126,9 @@
                 }
             } catch (err) {
                 alert('An error occurred');
+            } finally {
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Resend';
             }
         });
     </script>

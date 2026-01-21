@@ -60,9 +60,19 @@
                     <div id="error-message" class="hidden text-red-500 text-sm font-medium text-center"></div>
                     <!-- SingleButton (Primary Action) -->
                     <div class="pt-2">
-                        <button type="submit"
-                            class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-base font-bold leading-normal tracking-wide shadow-lg shadow-primary/20">
-                            <span class="truncate">Send Reset Code</span>
+                        <button type="submit" id="submit-btn"
+                            class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-base font-bold leading-normal tracking-wide shadow-lg shadow-primary/20 disabled:opacity-70 disabled:cursor-not-allowed">
+                            <span id="btn-text">Send Reset Code</span>
+                            <div id="btn-spinner" class="hidden ml-2">
+                                <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                            </div>
                         </button>
                     </div>
                     <div class="text-center pt-4">
@@ -75,30 +85,24 @@
                 </form>
             </div>
         </div>
-        <!-- Footer / Support -->
-        <div class="pt-12 text-center">
-            <p class="text-xs text-[#60708a] font-medium uppercase tracking-widest">
-                Need help? <a class="text-primary hover:underline" href="#">Contact Support</a>
-            </p>
-        </div>
-    </div>
-    </div>
-    </div>
-    <!-- Mobile view adjustments for Hero Text -->
-    <div
-        class="lg:hidden p-8 text-center bg-primary/5 dark:bg-zinc-900/50 border-b border-gray-100 dark:border-gray-800">
-        <h1 class="text-2xl font-black text-[#111418] dark:text-white mb-2">Recover Password</h1>
-        <p class="text-sm text-[#60708a] dark:text-gray-400">We'll help you get back into your account.</p>
     </div>
 
     <script>
         const form = document.getElementById('forgot-password-form');
         const errorDiv = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorDiv.classList.add('hidden');
             const email = document.getElementById('email').value;
+
+            // Loading state
+            submitBtn.disabled = true;
+            btnText.textContent = 'Sending Code...';
+            btnSpinner.classList.remove('hidden');
 
             try {
                 const res = await fetch('/forgot-password', {
@@ -113,10 +117,20 @@
                     const text = await res.text();
                     errorDiv.textContent = text || 'Something went wrong';
                     errorDiv.classList.remove('hidden');
+
+                    // Reset loading state if failed
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Send Reset Code';
+                    btnSpinner.classList.add('hidden');
                 }
             } catch (err) {
                 errorDiv.textContent = 'An error occurred. Please try again.';
                 errorDiv.classList.remove('hidden');
+
+                // Reset loading state if failed
+                submitBtn.disabled = false;
+                btnText.textContent = 'Send Reset Code';
+                btnSpinner.classList.add('hidden');
             }
         });
     </script>

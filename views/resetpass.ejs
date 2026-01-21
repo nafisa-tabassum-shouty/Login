@@ -15,23 +15,45 @@
 
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-slate-700 dark:text-slate-200">New Password</label>
-                    <input id="password" type="password" required
-                        class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                        placeholder="••••••••">
+                    <div class="relative flex items-center">
+                        <input id="password" type="password" required
+                            class="w-full h-12 px-4 pr-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            placeholder="••••••••">
+                        <button type="button"
+                            class="toggle-password absolute right-4 text-slate-400 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
                 </div>
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-slate-700 dark:text-slate-200">Confirm New
                         Password</label>
-                    <input id="confirmPassword" type="password" required
-                        class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
-                        placeholder="••••••••">
+                    <div class="relative flex items-center">
+                        <input id="confirmPassword" type="password" required
+                            class="w-full h-12 px-4 pr-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
+                            placeholder="••••••••">
+                        <button type="button"
+                            class="toggle-password absolute right-4 text-slate-400 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined">visibility</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="error-message" class="hidden text-red-500 text-sm font-medium text-center"></div>
 
-                <button type="submit"
-                    class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
-                    Update Password
+                <button type="submit" id="submit-btn"
+                    class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed">
+                    <span id="btn-text">Update Password</span>
+                    <div id="btn-spinner" class="hidden ml-2">
+                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                    </div>
                 </button>
             </form>
             <div class="mt-6 text-center">
@@ -41,6 +63,18 @@
     </div>
 
     <script>
+        // Password Toggle
+        const toggleBtns = document.querySelectorAll('.toggle-password');
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = btn.parentElement.querySelector('input');
+                const icon = btn.querySelector('.material-symbols-outlined');
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                icon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+            });
+        });
+
         const urlParams = new URLSearchParams(window.location.search);
         const email = urlParams.get('email');
         const otp = urlParams.get('otp');
@@ -54,6 +88,9 @@
 
         const form = document.getElementById('reset-password-form');
         const errorDiv = document.getElementById('error-message');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -67,6 +104,11 @@
                 errorDiv.classList.remove('hidden');
                 return;
             }
+
+            // Loading state
+            submitBtn.disabled = true;
+            btnText.textContent = 'Updating...';
+            btnSpinner.classList.remove('hidden');
 
             try {
                 const res = await fetch('/reset-password', {
@@ -82,10 +124,20 @@
                     const text = await res.text();
                     errorDiv.textContent = text || 'Reset failed. Code might be expired.';
                     errorDiv.classList.remove('hidden');
+
+                    // Reset loading state
+                    submitBtn.disabled = false;
+                    btnText.textContent = 'Update Password';
+                    btnSpinner.classList.add('hidden');
                 }
             } catch (err) {
                 errorDiv.textContent = 'An error occurred. Please try again.';
                 errorDiv.classList.remove('hidden');
+
+                // Reset loading state
+                submitBtn.disabled = false;
+                btnText.textContent = 'Update Password';
+                btnSpinner.classList.add('hidden');
             }
         });
     </script>

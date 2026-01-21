@@ -26,7 +26,7 @@
                     <p class="text-slate-500 dark:text-slate-400 text-sm">Please fill in your details to stay connected.
                     </p>
                 </div>
-                <form class="space-y-5" action="/login" method="POST">
+                <form id="login-form" class="space-y-5" action="/login" method="POST">
                     <div class="flex flex-col gap-2">
                         <label class="text-[#111418] dark:text-slate-200 text-base font-medium leading-normal">Email
                             ID</label>
@@ -38,10 +38,11 @@
                         <label
                             class="text-[#111418] dark:text-slate-200 text-base font-medium leading-normal">Password</label>
                         <div class="relative flex items-center">
-                            <input
+                            <input id="password-input"
                                 class="form-input w-full rounded-lg text-[#111418] border-[#dbdfe6] bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary h-14 placeholder:text-[#60708a] px-4 pr-12 text-base font-normal transition-all"
                                 placeholder="Enter your password" required="" type="password" name="password" />
-                            <button class="absolute right-4 text-[#60708a] hover:text-primary transition-colors"
+                            <button id="toggle-password"
+                                class="absolute right-4 text-[#60708a] hover:text-primary transition-colors"
                                 type="button">
                                 <span class="material-symbols-outlined">visibility</span>
                             </button>
@@ -59,11 +60,22 @@
                         <a class="text-sm font-semibold text-primary hover:underline" href="/forgot-password">Forgot
                             password?</a>
                     </div>
-                    <button
-                        class="w-full flex items-center justify-center rounded-lg h-14 bg-primary hover:bg-primary/90 text-white text-base font-bold tracking-[0.015em] shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+                    <button id="submit-btn"
+                        class="w-full flex items-center justify-center rounded-lg h-14 bg-primary hover:bg-primary/90 text-white text-base font-bold tracking-[0.015em] shadow-lg shadow-primary/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                         type="submit">
-                        Login
+                        <span id="btn-text">Login</span>
+                        <div id="btn-spinner" class="hidden ml-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                        </div>
                     </button>
+
                     <div class="text-center pt-8">
                         <p class="text-slate-500 dark:text-slate-400 text-sm">
                             <a class="text-primary font-bold hover:underline" href="/registration">Not a member? Sign
@@ -72,17 +84,36 @@
                     </div>
                 </form>
                 <div class="mt-16 lg:mt-24 flex justify-center gap-6 opacity-40">
-                    <span class="text-xs cursor-pointer hover:underline">Privacy Policy</span>
-                    <span class="text-xs cursor-pointer hover:underline">Terms of Service</span>
+                    <a href="/privacy-policy" class="text-xs hover:underline">Privacy Policy</a>
+                    <a href="/terms-of-service" class="text-xs hover:underline">Terms of Service</a>
                 </div>
             </div>
         </div>
     </div>
-    <div class="fixed bottom-6 right-6">
-        <button
-            class="bg-white dark:bg-slate-800 p-3 rounded-full shadow-xl border border-slate-200 dark:border-slate-700 text-primary flex items-center justify-center hover:scale-110 transition-transform">
-            <span class="material-symbols-outlined">dark_mode</span>
-        </button>
-    </div>
+
+    <script>
+        // Password Toggle
+        const passwordInput = document.getElementById('password-input');
+        const toggleBtn = document.getElementById('toggle-password');
+        const icon = toggleBtn.querySelector('.material-symbols-outlined');
+
+        toggleBtn.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            icon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+        });
+
+        // Loading State
+        const form = document.getElementById('login-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
+
+        form.addEventListener('submit', () => {
+            submitBtn.disabled = true;
+            btnText.textContent = 'Logging in...';
+            btnSpinner.classList.remove('hidden');
+        });
+    </script>
 
     <%- include('partials/footer') %>

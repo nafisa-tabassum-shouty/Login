@@ -38,7 +38,7 @@
                         started</p>
                 </div>
                 <!-- Form -->
-                <form class="space-y-5" action="/register" method="POST">
+                <form id="register-form" class="space-y-5" action="/register" method="POST">
                     <!-- Full Name -->
                     <div class="flex flex-col gap-1.5">
                         <label class="text-[#111418] dark:text-white text-sm font-semibold leading-normal px-1">Full
@@ -67,40 +67,59 @@
                     <div class="flex flex-col gap-1.5">
                         <label
                             class="text-[#111418] dark:text-white text-sm font-semibold leading-normal px-1">Password</label>
-                        <div class="relative group">
+                        <div class="relative group flex items-center">
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">lock</span>
-                            <input
-                                class="flex w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-14 pl-12 pr-4 text-base font-normal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                            <input id="password-input"
+                                class="flex w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-14 pl-12 pr-12 text-base font-normal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                                 placeholder="Create a password" type="password" name="password" required />
+                            <button type="button"
+                                class="toggle-password absolute right-4 text-slate-400 hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </button>
                         </div>
                     </div>
                     <!-- Confirm Password -->
                     <div class="flex flex-col gap-1.5">
                         <label class="text-[#111418] dark:text-white text-sm font-semibold leading-normal px-1">Confirm
                             Password</label>
-                        <div class="relative group">
+                        <div class="relative group flex items-center">
                             <span
                                 class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors">shield</span>
-                            <input
-                                class="flex w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-14 pl-12 pr-4 text-base font-normal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
+                            <input id="confirm-password-input"
+                                class="flex w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-14 pl-12 pr-12 text-base font-normal placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                                 placeholder="Repeat your password" type="password" name="confirmPassword" required />
+                            <button type="button"
+                                class="toggle-password absolute right-4 text-slate-400 hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </button>
                         </div>
                     </div>
                     <!-- Terms & Conditions (Contextual Addition for Registration) -->
                     <div class="flex items-center gap-3 py-2">
-                        <input class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary"
-                            type="checkbox" />
+                        <input class="w-5 h-5 rounded border-slate-300 text-primary focus:ring-primary" type="checkbox"
+                            required />
                         <label class="text-sm text-slate-600 dark:text-slate-400">
-                            I agree to the <a class="text-primary font-bold hover:underline" href="#">Terms of
+                            I agree to the <a class="text-primary font-bold hover:underline"
+                                href="/terms-of-service">Terms of
                                 Service</a>
                         </label>
                     </div>
                     <!-- Submit Button -->
-                    <button
-                        class="w-full bg-primary hover:bg-primary/90 text-white h-14 rounded-xl text-lg font-bold transition-all shadow-lg shadow-primary/20 active:scale-[0.98] mt-4"
+                    <button id="submit-btn"
+                        class="w-full bg-primary hover:bg-primary/90 text-white h-14 rounded-xl text-lg font-bold transition-all shadow-lg shadow-primary/20 active:scale-[0.98] mt-4 flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed"
                         type="submit">
-                        Register
+                        <span id="btn-text">Register Account</span>
+                        <div id="btn-spinner" class="hidden ml-2">
+                            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                        </div>
                     </button>
                 </form>
                 <!-- Footer Navigation -->
@@ -115,12 +134,12 @@
                         <div class="h-px bg-slate-200 dark:bg-slate-700 flex-1"></div>
                     </div>
                     <div class="flex gap-4 w-full">
-                        <button
+                        <a href="/auth/google"
                             class="flex-1 flex items-center justify-center h-12 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <img alt="Google Logo" class="w-5 h-5 mr-2"
-                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBhowrqIFFyPO6ZLzfbhjcHOoAp0bFKl_SbL7aoUYEvTC40H7dc6cTlaF6-iWwVwT9UaG7ez8pkUYIm9Yj5m1eMOZsJi5GSxPw1at-k22kt-nIKQFsHVxqXxp9jV0m8_7LvsCopjmNbh915gZ2kDUQFjXk90Uzdwr_HJT2C4ipQtJKpSw3cxoctHE_b81hV8bb18iTrSo6trLuhJ6SQDR4KnugbePIkB5svCtSLYJ0dpVUUgkIAulB1HedAok6s-Ns9EB76U6vxeA" />
+                                src="https://developers.google.com/identity/images/g-logo.png" />
                             <span class="text-sm font-bold text-slate-700 dark:text-slate-200">Google</span>
-                        </button>
+                        </a>
                         <button
                             class="flex-1 flex items-center justify-center h-12 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                             <span
@@ -132,5 +151,40 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Password Toggle
+        const toggleBtns = document.querySelectorAll('.toggle-password');
+        toggleBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = btn.parentElement.querySelector('input');
+                const icon = btn.querySelector('.material-symbols-outlined');
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                icon.textContent = type === 'password' ? 'visibility' : 'visibility_off';
+            });
+        });
+
+        // Loading State
+        const form = document.getElementById('register-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const btnText = document.getElementById('btn-text');
+        const btnSpinner = document.getElementById('btn-spinner');
+
+        form.addEventListener('submit', (e) => {
+            const password = document.getElementById('password-input').value;
+            const confirmPassword = document.getElementById('confirm-password-input').value;
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            btnText.textContent = 'Creating Account...';
+            btnSpinner.classList.remove('hidden');
+        });
+    </script>
 
     <%- include('partials/footer') %>

@@ -17,3 +17,11 @@ exports.getResetPasswordForm = (req, res) => {
 exports.getVerifyOTPForm = (req, res) => {
     res.render('verifyotp', { title: 'Verify OTP' });
 };
+
+exports.getPrivacyPolicy = (req, res) => {
+    res.render('privacy', { title: 'Privacy Policy' });
+};
+
+exports.getTermsOfService = (req, res) => {
+    res.render('terms', { title: 'Terms of Service' });
+};

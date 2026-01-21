@@ -4,10 +4,29 @@ const path = require('path');
 const connectDB = require('./config/db');
 const viewRouter = require('./routes/viewRoutes');
 const authRouter = require('./routes/authRoutes');
-const app = express();
+const session = require('express-session');
+const passport = require('passport');
+
+// Passport Config
+require('./config/passport')(passport);
 
 // Connect to Database
 connectDB();
+
+const app = express();
+
+// Sessions
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || 'secret',
+        resave: false,
+        saveUninitialized: false
+    })
+);
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Body parser middleware
 app.use(express.json());
