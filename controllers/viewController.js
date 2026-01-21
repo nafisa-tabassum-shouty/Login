@@ -13,3 +13,7 @@ exports.getRegistrationForm = (req, res) => {
 exports.getResetPasswordForm = (req, res) => {
     res.render('resetpass', { title: 'Reset Password' });
 };
+
+exports.getVerifyOTPForm = (req, res) => {
+    res.render('verifyotp', { title: 'Verify OTP' });
+};

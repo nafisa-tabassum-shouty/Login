@@ -3,23 +3,32 @@
     <div class="flex flex-col items-center justify-center min-h-[70vh] px-6">
         <div class="w-full max-w-md bg-white dark:bg-zinc-900 p-8 rounded-2xl shadow-xl">
             <div class="text-center mb-8">
+                <div class="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-primary text-3xl">lock_reset</span>
+                </div>
                 <h2 class="text-primary text-3xl font-extrabold mb-2">Reset Password</h2>
                 <p class="text-slate-500 dark:text-slate-400">Enter your new password below.</p>
             </div>
-            <form class="space-y-6">
+            <form id="reset-password-form" class="space-y-6">
+                <input type="hidden" id="email-hidden">
+                <input type="hidden" id="otp-hidden">
+
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-slate-700 dark:text-slate-200">New Password</label>
-                    <input type="password"
+                    <input id="password" type="password" required
                         class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                         placeholder="••••••••">
                 </div>
                 <div class="space-y-2">
                     <label class="block text-sm font-bold text-slate-700 dark:text-slate-200">Confirm New
                         Password</label>
-                    <input type="password"
+                    <input id="confirmPassword" type="password" required
                         class="w-full h-12 px-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all"
                         placeholder="••••••••">
                 </div>
+
+                <div id="error-message" class="hidden text-red-500 text-sm font-medium text-center"></div>
+
                 <button type="submit"
                     class="w-full h-12 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
                     Update Password
@@ -30,5 +39,55 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        const otp = urlParams.get('otp');
+
+        if (!email || !otp) {
+            window.location.href = '/forgot-password';
+        }
+
+        document.getElementById('email-hidden').value = email;
+        document.getElementById('otp-hidden').value = otp;
+
+        const form = document.getElementById('reset-password-form');
+        const errorDiv = document.getElementById('error-message');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorDiv.classList.add('hidden');
+
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Passwords do not match';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch('/reset-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, otp, password })
+                });
+
+                if (res.ok) {
+                    alert('Password reset successfully! You can now login.');
+                    window.location.href = '/login';
+                } else {
+                    const text = await res.text();
+                    errorDiv.textContent = text || 'Reset failed. Code might be expired.';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorDiv.textContent = 'An error occurred. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+    </script>
 
     <%- include('partials/footer') %>

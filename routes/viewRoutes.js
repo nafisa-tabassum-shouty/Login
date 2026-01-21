@@ -6,5 +6,6 @@ router.get('/login', viewController.getLoginForm);
 router.get('/forgot-password', viewController.getForgotPasswordForm);
 router.get('/registration', viewController.getRegistrationForm);
 router.get('/reset-password', viewController.getResetPasswordForm);
+router.get('/verify-otp', viewController.getVerifyOTPForm);
 
 module.exports = router;
