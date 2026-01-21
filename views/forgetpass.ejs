@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+
+    <div class="flex min-h-screen w-full flex-col lg:flex-row overflow-hidden">
+        <!-- Left Column: Hero/Branding -->
+        <div class="relative hidden lg:flex lg:w-1/2 flex-col items-center justify-center p-12 overflow-hidden">
+            <!-- Background Image with Overlay -->
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
+                data-alt="Abstract blue gradient professional background pattern"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBp_wQFV8bqkwjm7-0XF8dcvgp92Pjdd_dlbE-V_hPp-oqhKVebTOO_DguicRfQ4krgJhJoHPTb1hCszwdB3LrOPvMb7rHxlJ_95DBwKlgo7DEX-4PG2iMWJ80zXk7lrU-vOZbJo3Jc_e7cVcrmIjEAuMbij4bdGG7OK3TSKaO6p-PJA7cO7Pj_X_0ivkYgCoI7iHOFLaqrxiKcuYneSSWwzKsLfNcWpM1xq1mpayMgFME251ZEXt09-7etZQZA0reTdlPjIqq1zA");'>
+            </div>
+            <div class="absolute inset-0 bg-primary/40 backdrop-blur-[2px]"></div>
+            <!-- Content Overlay -->
+            <div class="relative z-10 flex flex-col items-center text-center max-w-md">
+                <div class="mb-6 rounded-full bg-white/20 px-4 py-1 backdrop-blur-md">
+                    <span class="text-white text-sm font-bold tracking-wider uppercase">No worries</span>
+                </div>
+                <h1 class="text-white text-5xl font-extrabold leading-tight tracking-tight mb-4">
+                    Recover Password
+                </h1>
+                <p class="text-white/90 text-lg font-medium leading-relaxed">
+                    We will send you instructions to reset your password and get you back on track.
+                </p>
+            </div>
+            <!-- Bottom decorative element -->
+            <div class="absolute bottom-10 left-10 flex items-center gap-2 text-white/70">
+                <span class="material-symbols-outlined text-sm">shield_lock</span>
+                <span class="text-xs font-semibold tracking-widest uppercase">Secure Verification</span>
+            </div>
+        </div>
+        <!-- Right Column: Form -->
+        <div
+            class="flex flex-1 flex-col items-center justify-center bg-background-light dark:bg-background-dark px-6 py-12 lg:px-24">
+            <div class="w-full max-w-[440px] space-y-8">
+                <!-- Page Heading (Modified for centered split design) -->
+                <div class="text-center">
+                    <h2 class="text-primary text-4xl font-extrabold tracking-tight mb-2">
+                        Forgot Password
+                    </h2>
+                    <p class="text-[#60708a] dark:text-gray-400 text-base font-medium">
+                        Enter your email to receive a recovery link
+                    </p>
+                </div>
+                <form action="/forgot-password" method="POST" class="space-y-6 pt-4">
+                    <!-- TextField -->
+                    <div class="flex flex-col gap-2">
+                        <label class="flex flex-col w-full">
+                            <p class="text-[#111418] dark:text-gray-200 text-sm font-bold leading-normal pb-2 ml-1">
+                                Email ID</p>
+                            <div class="flex w-full items-stretch rounded-lg soft-shadow group">
+                                <input
+                                    class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-l-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/20 border border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-zinc-900 focus:border-primary h-14 placeholder:text-[#60708a] p-[15px] border-r-0 pr-2 text-base font-normal transition-all"
+                                    placeholder="e.g. name@company.com" type="email" name="email" required />
+                                <div
+                                    class="text-[#60708a] flex border border-[#dbdfe6] dark:border-gray-700 bg-white dark:bg-zinc-900 items-center justify-center pr-[15px] rounded-r-lg border-l-0 group-focus-within:border-primary group-focus-within:border-l-0 transition-all">
+                                    <span class="material-symbols-outlined">mail</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                    <!-- SingleButton (Primary Action) -->
+                    <div class="pt-2">
+                        <button type="submit"
+                            class="flex w-full cursor-pointer items-center justify-center overflow-hidden rounded-lg h-14 px-5 bg-primary hover:bg-primary/90 transition-colors text-white text-base font-bold leading-normal tracking-wide shadow-lg shadow-primary/20">
+                            <span class="truncate">Send Reset Link</span>
+                        </button>
+                    </div>
+                    <div class="text-center pt-4">
+                        <a href="/login"
+                            class="inline-flex items-center gap-2 text-primary font-bold hover:underline transition-all">
+                            <span class="material-symbols-outlined text-lg">arrow_back</span>
+                            <span>Back to Login</span>
+                        </a>
+                    </div>
+            </div>
+        </div>
+        <!-- Footer / Support -->
+        <div class="pt-12 text-center">
+            <p class="text-xs text-[#60708a] font-medium uppercase tracking-widest">
+                Need help? <a class="text-primary hover:underline" href="#">Contact Support</a>
+            </p>
+        </div>
+    </div>
+    </div>
+    </div>
+    <!-- Mobile view adjustments for Hero Text -->
+    <div
+        class="lg:hidden p-8 text-center bg-primary/5 dark:bg-zinc-900/50 border-b border-gray-100 dark:border-gray-800">
+        <h1 class="text-2xl font-black text-[#111418] dark:text-white mb-2">Recover Password</h1>
+        <p class="text-sm text-[#60708a] dark:text-gray-400">We'll help you get back into your account.</p>
+    </div>
+
+    <%- include('partials/footer') %>

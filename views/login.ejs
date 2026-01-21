@@ -1,0 +1,88 @@
+<%- include('partials/header') %>
+
+    <div class="flex min-h-screen flex-col lg:flex-row overflow-hidden">
+        <div class="relative hidden lg:flex lg:w-1/2 flex-col justify-center items-center px-12 xl:px-24 h-screen">
+            <div class="absolute inset-0 bg-cover bg-center z-0"
+                data-alt="Interior of a modern high-end office workspace"
+                style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBqJbup79LzQtq42UOPOnoaYxyHCLRsMlBrbqHvikydUqa-HnJhRiSlHw3Bvs07BKuVdNKuqVg9t0EGeYGzoBT0LaZBqNsDGaaun5Hz0lCPnZZYw4Vm57XP_QEix7JEWEYsryro9b5FoJQIhZfj8RBj-XNWQ1Rd4NsSV9GtacNxc3Bwg1DCpGdr3uXzD1YjUq4o6oyYdPxu9VbamYxJAaBeHXny3peQeSHjuo4wNLjx6rQwlyFL-JnPtY7rNZTy_xBB9ILzfkq5lg');">
+                <div class="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
+            </div>
+            <div class="relative z-10 text-center max-w-lg">
+                <p class="text-white/90 text-lg font-medium mb-4 tracking-wide">Nice to see you again</p>
+                <h1 class="text-white text-5xl xl:text-7xl font-extrabold leading-tight tracking-[-0.033em] mb-8">
+                    Welcome <br />Back
+                </h1>
+                <p class="text-white/80 text-lg leading-relaxed font-normal">
+                    Enter your credentials to access your professional workspace and continue your journey with our
+                    premium tools.
+                </p>
+            </div>
+        </div>
+        <div
+            class="flex flex-1 flex-col justify-center items-center px-6 py-12 lg:px-20 bg-background-light dark:bg-background-dark min-h-screen">
+            <div class="w-full max-w-[440px] flex flex-col justify-center">
+                <div class="mb-10 text-center">
+                    <h2 class="text-primary text-[32px] font-bold tracking-tight mb-2">Login Account</h2>
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">Please fill in your details to stay connected.
+                    </p>
+                </div>
+                <form class="space-y-5" action="/login" method="POST">
+                    <div class="flex flex-col gap-2">
+                        <label class="text-[#111418] dark:text-slate-200 text-base font-medium leading-normal">Email
+                            ID</label>
+                        <input
+                            class="form-input w-full rounded-lg text-[#111418] border-[#dbdfe6] bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary h-14 placeholder:text-[#60708a] px-4 text-base font-normal transition-all"
+                            placeholder="Enter your email" required="" type="email" name="email" />
+                    </div>
+                    <div class="flex flex-col gap-2">
+                        <label
+                            class="text-[#111418] dark:text-slate-200 text-base font-medium leading-normal">Password</label>
+                        <div class="relative flex items-center">
+                            <input
+                                class="form-input w-full rounded-lg text-[#111418] border-[#dbdfe6] bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary h-14 placeholder:text-[#60708a] px-4 pr-12 text-base font-normal transition-all"
+                                placeholder="Enter your password" required="" type="password" name="password" />
+                            <button class="absolute right-4 text-[#60708a] hover:text-primary transition-colors"
+                                type="button">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between pt-2">
+                        <label class="flex items-center gap-x-3 cursor-pointer group custom-checkbox-tick">
+                            <input
+                                class="h-5 w-5 rounded border-[#dbdfe6] border-2 bg-transparent text-primary checked:bg-primary checked:border-primary focus:ring-0 focus:ring-offset-0 transition-all cursor-pointer"
+                                type="checkbox" />
+                            <span
+                                class="text-slate-600 dark:text-slate-400 text-sm font-medium group-hover:text-primary transition-colors">Keep
+                                me signed in</span>
+                        </label>
+                        <a class="text-sm font-semibold text-primary hover:underline" href="/forgot-password">Forgot
+                            password?</a>
+                    </div>
+                    <button
+                        class="w-full flex items-center justify-center rounded-lg h-14 bg-primary hover:bg-primary/90 text-white text-base font-bold tracking-[0.015em] shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+                        type="submit">
+                        Login
+                    </button>
+                    <div class="text-center pt-8">
+                        <p class="text-slate-500 dark:text-slate-400 text-sm">
+                            <a class="text-primary font-bold hover:underline" href="/registration">Not a member? Sign
+                                up</a>
+                        </p>
+                    </div>
+                </form>
+                <div class="mt-16 lg:mt-24 flex justify-center gap-6 opacity-40">
+                    <span class="text-xs cursor-pointer hover:underline">Privacy Policy</span>
+                    <span class="text-xs cursor-pointer hover:underline">Terms of Service</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fixed bottom-6 right-6">
+        <button
+            class="bg-white dark:bg-slate-800 p-3 rounded-full shadow-xl border border-slate-200 dark:border-slate-700 text-primary flex items-center justify-center hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+    </div>
+
+    <%- include('partials/footer') %>

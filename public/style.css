@@ -1,0 +1,6 @@
+/* Main Design System Tokens */
+:root {
+  --primary: #3c83f6;
+  --background-light: #f9fafb;
+  --background-dark: #19202e;
+}
