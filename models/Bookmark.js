@@ -1,18 +1,21 @@
 const mongoose = require('mongoose');
 
-const BookmarkSchema = new mongoose.Schema({
-    user: {
+const bookmarkSchema = new mongoose.Schema({
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    post: {
+    post_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
         required: true
     }
 }, {
-    timestamps: true
+    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-module.exports = mongoose.model('Bookmark', BookmarkSchema);
+// Prevent duplicate bookmarks
+bookmarkSchema.index({ user_id: 1, post_id: 1 }, { unique: true });
+
+module.exports = mongoose.model('Bookmark', bookmarkSchema);

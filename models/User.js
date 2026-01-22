@@ -26,13 +26,13 @@ const userSchema = new mongoose.Schema({
     username: {
         type: String,
         unique: true,
-        sparse: true // Allows null/undefined while maintaining uniqueness for values
+        sparse: true
     },
-    profilePicture: {
+    profile_picture: {
         type: String,
         default: 'default-profile.png'
     },
-    coverPhoto: {
+    cover_photo: {
         type: String,
         default: 'default-cover.png'
     },
@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
     resetPasswordOTP: String,
     resetPasswordOTPExpire: Date
 }, {
-    timestamps: true
+    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
 // Encrypt password using bcrypt

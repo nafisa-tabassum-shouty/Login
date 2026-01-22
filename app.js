@@ -4,7 +4,7 @@ const path = require('path');
 const connectDB = require('./config/db');
 const viewRouter = require('./routes/viewRoutes');
 const authRouter = require('./routes/authRoutes');
-const postRouter = require('./routes/postRoutes');
+
 
 const session = require('express-session');
 const passport = require('passport');
@@ -42,10 +42,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
-app.get('/', (req, res) => res.redirect('/login'));
+app.get('/', (req, res) => {
+    if (req.user || req.session.userId) {
+        res.redirect('/dashboard');
+    } else {
+        res.redirect('/login');
+    }
+});
 app.use('/', viewRouter);
 app.use('/', authRouter);
-app.use('/api/posts', postRouter);
+
 
 
 const PORT = process.env.PORT || 3000;

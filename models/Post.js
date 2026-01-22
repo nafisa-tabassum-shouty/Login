@@ -1,28 +1,29 @@
 const mongoose = require('mongoose');
 
-const PostSchema = new mongoose.Schema({
-    user: {
+const postSchema = new mongoose.Schema({
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    contentText: {
+    content_text: {
+        type: String,
+        trim: true
+    },
+    content_image: {
         type: String
     },
-    contentImage: {
+    content_gif: {
         type: String
     },
-    contentGif: {
+    content_video: {
         type: String
     },
-    contentVideo: {
-        type: String
-    },
-    contentCalendar: {
+    content_calendar: {
         type: Date
     }
 }, {
-    timestamps: true
+    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-module.exports = mongoose.model('Post', PostSchema);
+module.exports = mongoose.model('Post', postSchema);

@@ -1,23 +1,23 @@
 const mongoose = require('mongoose');
 
-const ReactionSchema = new mongoose.Schema({
-    post: {
+const reactionSchema = new mongoose.Schema({
+    post_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Post',
         required: true
     },
-    user: {
+    user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    reactionType: {
+    reaction_type: {
         type: String,
         enum: ['like', 'love', 'haha', 'wow', 'sad', 'angry'],
         default: 'like'
     }
 }, {
-    timestamps: true
+    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
 });
 
-module.exports = mongoose.model('Reaction', ReactionSchema);
+module.exports = mongoose.model('Reaction', reactionSchema);

@@ -4,13 +4,15 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>SocialApp | Dashboard</title>
+    <title>Social Media Main Dashboard</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,fill@0..1&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
-    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -23,7 +25,13 @@
                     },
                     fontFamily: {
                         "display": ["Plus Jakarta Sans", "sans-serif"]
-                    }
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
                 },
             },
         }
@@ -37,30 +45,12 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
 
-        .material-symbols-outlined.fill {
-            font-variation-settings: 'FILL' 1;
+        .active-nav {
+            background-color: #f0f2f5;
         }
 
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-
-        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #475569;
-        }
-
-        emoji-picker {
-            width: 100%;
-            height: 350px;
+        .dark .active-nav {
+            background-color: rgba(37, 140, 244, 0.2);
         }
     </style>
 </head>
@@ -71,9 +61,9 @@
         <header
             class="sticky top-0 z-50 w-full bg-white dark:bg-[#1a242f] border-b border-[#f0f2f5] dark:border-slate-700 px-4 md:px-10 py-3">
             <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
-                <a href="/dashboard" class="flex items-center gap-4 text-primary hover:opacity-80 transition-opacity">
+                <div class="flex items-center gap-4 text-primary">
                     <div class="size-8">
-                        <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                        <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
                                 fill="currentColor"></path>
@@ -82,13 +72,13 @@
                     <h2
                         class="text-[#111418] dark:text-white text-xl font-bold leading-tight tracking-tight hidden sm:block">
                         SocialApp</h2>
-                </a>
+                </div>
                 <div class="flex-1 max-w-xl">
                     <label class="relative flex items-center">
                         <span class="absolute left-4 text-[#60758a] material-symbols-outlined">search</span>
                         <input
                             class="w-full h-10 pl-11 pr-4 rounded-lg border-none bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white placeholder:text-[#60758a] focus:ring-2 focus:ring-primary/50"
-                            placeholder="Search SocialApp" type="text" />
+                            placeholder="Search for people, topics, or keywords..." type="text" />
                     </label>
                 </div>
                 <div class="flex items-center gap-4">
@@ -98,448 +88,336 @@
                         <span class="material-symbols-outlined">dark_mode</span>
                     </button>
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20"
-                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOJbghMi1dcPW18gk_Ys9KxaRhkOY8L-kIz0DBv7EytiJSuCm3ONLulURv6Fc2zJfhrnX7YAhwALedWZoaA4irx7QgVHlqHUjO3xh21flMMd3goDoxyMJU5y3hWTGLX3-qulUuNYAZF0V2Y9paxa-aRAXnSDq7QKQCk4UMrbMfit6Vl9C2WDgljyRBO52GwXCKnFaj7JbjrM2RTCoNXhcBwekJoNM_V2d2mR8DSixuebvlosXLB3685O9ysOiBLYYSpApa22XjOfI");'>
+                        data-alt="User profile avatar"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
                     </div>
                 </div>
             </div>
         </header>
-
         <!-- Main Content Area -->
         <main class="flex-1 max-w-[1440px] mx-auto w-full px-4 md:px-10 py-6">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Left Sidebar: Nav -->
-                <aside
-                    class="hidden lg:block lg:col-span-3 h-[calc(100vh-120px)] sticky top-24 overflow-y-auto pr-2 custom-scrollbar">
-                    <nav class="flex flex-col gap-2">
-                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg bg-[#f0f2f5] dark:bg-primary/20 text-primary transition-colors"
-                            href="/dashboard">
-                            <span class="material-symbols-outlined fill">home</span>
-                            <span class="text-base font-bold">Home</span>
-                        </a>
-                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined">explore</span>
-                            <span class="text-base font-medium">Explore</span>
-                        </a>
-                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined">notifications</span>
-                            <span class="text-base font-medium">Notifications</span>
-                        </a>
-                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined">mail</span>
-                            <span class="text-base font-medium">Messages</span>
-                        </a>
-                        <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
-                            href="#">
-                            <span class="material-symbols-outlined">person</span>
-                            <span class="text-base font-medium">Profile</span>
-                        </a>
-                    </nav>
-
-                    <div class="mt-8 px-4">
-                        <h3 class="text-[10px] font-bold uppercase tracking-widest text-[#60758a] mb-4">Connected
-                            Accounts</h3>
-                        <div class="flex gap-3">
-                            <button
-                                class="flex items-center justify-center size-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95"
-                                title="Google">
-                                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google"
-                                    class="size-5" />
-                            </button>
-                            <button
-                                class="flex items-center justify-center size-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm active:scale-95 text-[#111418] dark:text-white"
-                                title="Apple">
-                                <span class="material-symbols-outlined text-xl">laptop_mac</span>
-                            </button>
+                <!-- Left Sidebar: Nav & Profile -->
+                <aside class="hidden lg:block lg:col-span-3 h-[calc(100vh-120px)] sticky top-24 overflow-y-auto pr-2">
+                    <div class="flex flex-col gap-6">
+                        <!-- Profile Card -->
+                        <div
+                            class="bg-white dark:bg-[#1a242f] rounded-xl p-4 border border-[#f0f2f5] dark:border-slate-700">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                                    data-alt="<%= user.fullName %> profile photo"
+                                    style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                                </div>
+                                <div class="flex flex-col text-left">
+                                    <h1 class="text-[#111418] dark:text-white text-base font-bold">
+                                        <%= user.fullName %>
+                                    </h1>
+                                    <p class="text-[#60758a] text-sm">@<%= user.username ||
+                                            user.fullName.toLowerCase().replace(/\s+/g, '_' ) %>
+                                    </p>
+                                </div>
+                            </div>
+                            <div
+                                class="flex justify-between text-center pt-4 border-t border-[#f0f2f5] dark:border-slate-700">
+                                <div>
+                                    <p class="text-xs text-[#60758a] uppercase font-bold tracking-wider">Posts</p>
+                                    <p class="text-sm font-bold">124</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-[#60758a] uppercase font-bold tracking-wider">Followers</p>
+                                    <p class="text-sm font-bold">1.2k</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-[#60758a] uppercase font-bold tracking-wider">Following</p>
+                                    <p class="text-sm font-bold">482</p>
+                                </div>
+                            </div>
                         </div>
+                        <!-- Navigation -->
+                        <nav class="flex flex-col gap-2">
+                            <a class="flex items-center gap-4 px-4 py-3 rounded-lg active-nav text-primary transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined fill-current">home</span>
+                                <span class="text-base font-semibold">Home</span>
+                            </a>
+                            <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined">explore</span>
+                                <span class="text-base font-medium">Explore</span>
+                            </a>
+                            <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined">notifications</span>
+                                <span class="text-base font-medium">Notifications</span>
+                            </a>
+                            <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined">mail</span>
+                                <span class="text-base font-medium">Messages</span>
+                            </a>
+                            <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined">bookmark</span>
+                                <span class="text-base font-medium">Bookmarks</span>
+                            </a>
+                            <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined">person</span>
+                                <span class="text-base font-medium">Profile</span>
+                            </a>
+                            <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
+                                href="#">
+                                <span class="material-symbols-outlined">settings</span>
+                                <span class="text-base font-medium">Settings</span>
+                            </a>
+                        </nav>
+                        <button
+                            class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-4 rounded-xl shadow-lg shadow-primary/20 transition-all">
+                            New Post
+                        </button>
                     </div>
                 </aside>
-
                 <!-- Center Feed -->
                 <section class="col-span-1 lg:col-span-6 flex flex-col gap-6">
                     <!-- Composer -->
                     <div
                         class="bg-white dark:bg-[#1a242f] rounded-xl p-4 border border-[#f0f2f5] dark:border-slate-700 shadow-sm">
                         <div class="flex gap-4">
-                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 shrink-0 border border-slate-100"
-                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBOJbghMi1dcPW18gk_Ys9KxaRhkOY8L-kIz0DBv7EytiJSuCm3ONLulURv6Fc2zJfhrnX7YAhwALedWZoaA4irx7QgVHlqHUjO3xh21flMMd3goDoxyMJU5y3hWTGLX3-qulUuNYAZF0V2Y9paxa-aRAXnSDq7QKQCk4UMrbMfit6Vl9C2WDgljyRBO52GwXCKnFaj7JbjrM2RTCoNXhcBwekJoNM_V2d2mR8DSixuebvlosXLB3685O9ysOiBLYYSpApa22XjOfI");'>
+                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 shrink-0"
+                                data-alt="Your profile avatar"
+                                style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
                             </div>
-                            <div class="flex-1 relative">
-                                <textarea id="postContent"
-                                    class="w-full min-h-[120px] bg-transparent border-none focus:ring-0 text-lg resize-none placeholder:text-slate-400"
-                                    placeholder="What's on your mind?"></textarea>
-
-                                <div id="attachmentPreviews" class="flex flex-wrap gap-2 mt-2"></div>
-
-                                <div id="emojiPanel"
-                                    class="hidden absolute top-full left-0 z-50 mt-2 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden w-full sm:w-[350px]">
-                                    <emoji-picker class="light"></emoji-picker>
-                                </div>
-
+                            <div class="flex-1">
+                                <textarea
+                                    class="w-full min-h-[100px] bg-transparent border-none focus:ring-0 text-lg resize-none placeholder:text-[#bac4cf]"
+                                    placeholder="What's happening?"></textarea>
                                 <div
-                                    class="flex items-center justify-between pt-4 border-t border-[#f0f2f5] dark:border-slate-700 mt-2">
-                                    <div class="flex items-center gap-1">
-                                        <button id="btnImage"
-                                            class="p-2 rounded-full text-primary hover:bg-primary/10 transition-colors"
-                                            title="Add Image">
-                                            <span class="material-symbols-outlined">image</span>
-                                        </button>
-                                        <button id="btnEmoji"
-                                            class="p-2 rounded-full text-primary hover:bg-primary/10 transition-colors"
-                                            title="Add Emoji">
-                                            <span class="material-symbols-outlined">mood</span>
-                                        </button>
-                                        <button id="btnCalendar"
-                                            class="p-2 rounded-full text-primary hover:bg-primary/10 transition-colors"
-                                            title="Schedule">
-                                            <span class="material-symbols-outlined">event</span>
-                                        </button>
-
-                                        <input type="file" id="inputImage" class="hidden" accept="image/*" />
-                                        <input type="datetime-local" id="inputCalendar" class="hidden" />
+                                    class="flex items-center justify-between pt-3 border-t border-[#f0f2f5] dark:border-slate-700">
+                                    <div class="flex gap-1 text-primary">
+                                        <button class="p-2 rounded-full hover:bg-primary/10 transition-colors"><span
+                                                class="material-symbols-outlined">image</span></button>
+                                        <button class="p-2 rounded-full hover:bg-primary/10 transition-colors"><span
+                                                class="material-symbols-outlined">gif_box</span></button>
+                                        <button class="p-2 rounded-full hover:bg-primary/10 transition-colors"><span
+                                                class="material-symbols-outlined">ballot</span></button>
+                                        <button class="p-2 rounded-full hover:bg-primary/10 transition-colors"><span
+                                                class="material-symbols-outlined">mood</span></button>
+                                        <button class="p-2 rounded-full hover:bg-primary/10 transition-colors"><span
+                                                class="material-symbols-outlined">calendar_month</span></button>
                                     </div>
-                                    <button id="submitPost"
-                                        class="bg-primary text-white px-8 py-2.5 rounded-full font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
-                                        disabled>Post</button>
+                                    <button
+                                        class="bg-primary text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50">Post</button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Post Feed -->
-                    <div id="postFeed" class="flex flex-col gap-4">
-                        <% if (typeof posts !=='undefined' && posts && posts.length> 0) { %>
-                            <% posts.forEach(function(post) { %>
-                                <article
-                                    class="bg-white dark:bg-[#1a242f] rounded-xl border border-[#f0f2f5] dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                                    <div class="p-4">
-                                        <div class="flex items-start justify-between">
-                                            <div class="flex gap-3">
-                                                <% var profilePic=(post.user && post.user.profilePicture) ?
-                                                    post.user.profilePicture
-                                                    : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                                                    ; %>
-                                                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border border-slate-100"
-                                                        style="background-image: url('<%= profilePic %>');"></div>
-                                                    <div>
-                                                        <div class="flex items-center gap-1">
-                                                            <h4
-                                                                class="font-bold text-[#111418] dark:text-white leading-tight">
-                                                                <%= post.user ? post.user.fullName : 'Anonymous User' %>
-                                                            </h4>
-                                                        </div>
-                                                        <p class="text-xs text-[#60758a]">
-                                                            @<%= post.user ?
-                                                                post.user.fullName.toLowerCase().replace(/\s/g, '_' )
-                                                                : 'user' %> •
-                                                                <%= new
-                                                                    Date(post.createdAt).toLocaleDateString(undefined, {
-                                                                    month: 'short' , day: 'numeric' }) %>
-                                                        </p>
-                                                    </div>
-                                            </div>
-                                            <button
-                                                class="text-[#60758a] hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-full transition-colors">
-                                                <span class="material-symbols-outlined">more_horiz</span>
-                                            </button>
+                    <!-- Post List -->
+                    <div class="flex flex-col gap-4">
+                        <!-- Sample Post 1 (Image) -->
+                        <article
+                            class="bg-white dark:bg-[#1a242f] rounded-xl border border-[#f0f2f5] dark:border-slate-700 overflow-hidden shadow-sm">
+                            <div class="p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex gap-3">
+                                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                                            data-alt="Jordan Smith profile"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9tcAEzaLl9nA-zzy2_QReSKwAjNTnFi8RyDa85w1s3ko7NEUYsDNRWioGinCwjz09O4J-83fOoDNRBDoEQ7GZk8SsQzMtMCBsKchsNyiUBD1yVuYGWRk3S5A3dTLEem8EYOP1qIF3kO_730-HqFdQSylD34vO-j6zlVgY4GGW3omxD088lMYKv3dQ5vnxwS3lIx105f6bGV-SFgJXAGsa9XqxcY_hmnHahZnYo2BlWNGGO_KEsnA3FE2eJ1GqyyQutbIpJxPQK04");'>
                                         </div>
-                                        <div class="mt-3">
-                                            <% if (post.contentText) { %>
-                                                <p
-                                                    class="text-[#111418] dark:text-slate-200 leading-relaxed mb-4 whitespace-pre-wrap">
-                                                    <%= post.contentText %>
-                                                </p>
-                                                <% } %>
-                                                    <% if (post.contentImage) { %>
-                                                        <div
-                                                            class="w-full rounded-xl overflow-hidden border border-[#f0f2f5] dark:border-slate-700 mb-4 bg-slate-50 dark:bg-slate-800/50">
-                                                            <img src="<%= post.contentImage %>"
-                                                                class="w-full h-auto object-contain max-h-[500px]"
-                                                                alt="Post image" />
-                                                        </div>
-                                                        <% } %>
-                                                            <% if (post.contentCalendar) { %>
-                                                                <div
-                                                                    class="p-4 bg-primary/5 dark:bg-primary/10 rounded-xl border border-primary/20 mb-4 flex items-center gap-3">
-                                                                    <span
-                                                                        class="material-symbols-outlined text-primary">calendar_month</span>
-                                                                    <div>
-                                                                        <p class="text-sm font-bold text-primary">
-                                                                            Scheduled Event</p>
-                                                                        <p
-                                                                            class="text-xs text-slate-500 dark:text-slate-400">
-                                                                            <%= new
-                                                                                Date(post.contentCalendar).toLocaleString()
-                                                                                %>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                                <% } %>
-
-                                                                    <!-- Actions -->
-                                                                    <div
-                                                                        class="flex items-center justify-between pt-2 border-t border-[#f0f2f5] dark:border-slate-700">
-                                                                        <div class="flex gap-4">
-                                                                            <button
-                                                                                class="group flex items-center gap-2 text-slate-500 hover:text-red-500 transition-colors">
-                                                                                <span
-                                                                                    class="material-symbols-outlined group-hover:bg-red-50 dark:group-hover:bg-red-500/10 p-2 rounded-full">favorite</span>
-                                                                                <span class="text-sm font-bold">0</span>
-                                                                            </button>
-                                                                            <button
-                                                                                class="group flex items-center gap-2 text-slate-500 hover:text-primary transition-colors">
-                                                                                <span
-                                                                                    class="material-symbols-outlined group-hover:bg-primary/10 p-2 rounded-full">chat_bubble</span>
-                                                                                <span class="text-sm font-bold">0</span>
-                                                                            </button>
-                                                                        </div>
-                                                                        <button
-                                                                            class="text-slate-500 hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
-                                                                            <span
-                                                                                class="material-symbols-outlined">share</span>
-                                                                        </button>
-                                                                    </div>
+                                        <div>
+                                            <div class="flex items-center gap-1">
+                                                <h4 class="font-bold text-[#111418] dark:text-white">Jordan Smith</h4>
+                                                <span
+                                                    class="material-symbols-outlined text-primary text-[18px] fill-current">verified</span>
+                                            </div>
+                                            <p class="text-sm text-[#60758a]">@jsmith_design • 2h</p>
                                         </div>
                                     </div>
-                                </article>
-                                <% }); %>
-                                    <% } else { %>
-                                        <div
-                                            class="text-center py-20 bg-white dark:bg-[#1a242f] rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
-                                            <div
-                                                class="size-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <button
+                                        class="text-[#60758a] hover:bg-[#f0f2f5] dark:hover:bg-slate-800 p-1 rounded-full"><span
+                                            class="material-symbols-outlined">more_horiz</span></button>
+                                </div>
+                                <div class="mt-3">
+                                    <p class="text-[#111418] dark:text-slate-200 leading-relaxed mb-4">
+                                        Just finished the new design system using Tailwind CSS. It feels so much cleaner
+                                        now! #DesignSystems #WebDev #UI
+                                    </p>
+                                    <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl mb-4 border border-[#f0f2f5] dark:border-slate-700"
+                                        data-alt="A preview of a modern design system UI"
+                                        style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBNRDtqkhW9yXAl8D17zUxFa4AOBmkgcc9tkRcHYsa5EieNMJsTGkJrXulkX3l4YzWi7Rx_cgxiG1OjKdrGMUtPIUHOwLuUZt37N3wjnJ3M6wicDgUk0Mrko86YJd2ffw5X2LOk88Wc67kVYR2f8I_-C6VFkE1kJZoYah7ic9EHOhjdLVwV4TNBZpDTyA04ctaVJKw-QXXXxmqyuEpCmmsU7Yu0m4R7ZcjBrQyxmNvxfEMJXFQhuMel-8YdjW5L8DxxmY5bZ7DshIQ");'>
+                                    </div>
+                                    <!-- Interaction Bar -->
+                                    <div
+                                        class="flex items-center justify-between pt-2 border-t border-[#f0f2f5] dark:border-slate-700">
+                                        <div class="flex gap-6">
+                                            <button
+                                                class="group flex items-center gap-2 text-[#60758a] hover:text-red-500 transition-colors">
                                                 <span
-                                                    class="material-symbols-outlined text-slate-400 text-3xl">post_add</span>
-                                            </div>
-                                            <h3 class="text-lg font-bold">No posts yet</h3>
-                                            <p class="text-slate-500 text-sm">Be the first to share something with the
-                                                community!</p>
+                                                    class="material-symbols-outlined group-hover:bg-red-50 dark:group-hover:bg-red-500/10 p-2 rounded-full">favorite</span>
+                                                <span class="text-sm font-bold">1.2k</span>
+                                            </button>
+                                            <button
+                                                class="group flex items-center gap-2 text-[#60758a] hover:text-primary transition-colors">
+                                                <span
+                                                    class="material-symbols-outlined group-hover:bg-primary/10 p-2 rounded-full">chat_bubble</span>
+                                                <span class="text-sm font-bold">45</span>
+                                            </button>
+                                            <button
+                                                class="group flex items-center gap-2 text-[#60758a] hover:text-green-500 transition-colors">
+                                                <span
+                                                    class="material-symbols-outlined group-hover:bg-green-50 dark:group-hover:bg-green-500/10 p-2 rounded-full">autorenew</span>
+                                                <span class="text-sm font-bold">12</span>
+                                            </button>
                                         </div>
-                                        <% } %>
+                                        <button
+                                            class="text-[#60758a] hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors"><span
+                                                class="material-symbols-outlined">share</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <!-- Sample Post 2 (Text Only) -->
+                        <article
+                            class="bg-white dark:bg-[#1a242f] rounded-xl border border-[#f0f2f5] dark:border-slate-700 overflow-hidden shadow-sm">
+                            <div class="p-4">
+                                <div class="flex items-start justify-between">
+                                    <div class="flex gap-3">
+                                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                                            data-alt="Sarah Chen profile"
+                                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdQh1h3EgufXpna7mYPFBtSLqjyYNQ3uc-8a0A_5PqOFmHdmp3oV6xx2mxNI2DaUaItUfDd681MB1pbMcP8WYbqqpeFta2fpU-MWnV6-LNmPHFVKQi9iNNOMdYnx0BJsZq_8OgRHqSuBSvid-SsUbGHRzGnwoM-tQG3SJn1IFmOZwO-4PPgxvnxpCOHuGnuFVeUIWY8qQ0TPtjDGguu41wK--EsaQcZxiJZezhNGVfbB20Lz4ol9xgyiYYhdN0UfbAIEYrkfmm6No");'>
+                                        </div>
+                                        <div>
+                                            <h4 class="font-bold text-[#111418] dark:text-white">Sarah Chen</h4>
+                                            <p class="text-sm text-[#60758a]">@sarahcodes • 5h</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        class="text-[#60758a] hover:bg-[#f0f2f5] dark:hover:bg-slate-800 p-1 rounded-full"><span
+                                            class="material-symbols-outlined">more_horiz</span></button>
+                                </div>
+                                <div class="mt-3">
+                                    <p class="text-[#111418] dark:text-slate-200 leading-relaxed mb-4 text-lg">
+                                        The most important skill for a senior engineer isn't writing code. It's reading
+                                        it, understanding the business context, and knowing when NOT to build something.
+                                    </p>
+                                    <div
+                                        class="flex items-center justify-between pt-2 border-t border-[#f0f2f5] dark:border-slate-700">
+                                        <div class="flex gap-6">
+                                            <button
+                                                class="group flex items-center gap-2 text-[#60758a] hover:text-red-500 transition-colors">
+                                                <span
+                                                    class="material-symbols-outlined group-hover:bg-red-50 dark:group-hover:bg-red-500/10 p-2 rounded-full">favorite</span>
+                                                <span class="text-sm font-bold">3.4k</span>
+                                            </button>
+                                            <button
+                                                class="group flex items-center gap-2 text-[#60758a] hover:text-primary transition-colors">
+                                                <span
+                                                    class="material-symbols-outlined group-hover:bg-primary/10 p-2 rounded-full">chat_bubble</span>
+                                                <span class="text-sm font-bold">218</span>
+                                            </button>
+                                            <button
+                                                class="group flex items-center gap-2 text-[#60758a] hover:text-green-500 transition-colors">
+                                                <span
+                                                    class="material-symbols-outlined group-hover:bg-green-50 dark:group-hover:bg-green-500/10 p-2 rounded-full">autorenew</span>
+                                                <span class="text-sm font-bold">582</span>
+                                            </button>
+                                        </div>
+                                        <button
+                                            class="text-[#60758a] hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors"><span
+                                                class="material-symbols-outlined">share</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
                     </div>
                 </section>
-
-                <!-- Right Sidebar -->
-                <aside
-                    class="hidden xl:block xl:col-span-3 h-[calc(100vh-120px)] sticky top-24 overflow-y-auto custom-scrollbar">
+                <!-- Right Sidebar: Trends & Notifications -->
+                <aside class="hidden xl:block xl:col-span-3 h-[calc(100vh-120px)] sticky top-24 overflow-y-auto">
                     <div class="flex flex-col gap-6">
+                        <!-- Trending Section -->
                         <section
                             class="bg-white dark:bg-[#1a242f] rounded-xl border border-[#f0f2f5] dark:border-slate-700 overflow-hidden">
-                            <div class="px-4 py-4 border-b border-[#f0f2f5] dark:border-slate-700">
-                                <h3 class="font-bold text-lg">What's happening</h3>
+                            <div class="px-4 py-3 border-b border-[#f0f2f5] dark:border-slate-700">
+                                <h3 class="font-bold text-lg">Trends for you</h3>
                             </div>
                             <div class="flex flex-col">
                                 <a class="px-4 py-3 hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
                                     href="#">
-                                    <p class="text-xs text-slate-500">Trending in Tech</p>
+                                    <p class="text-xs text-[#60758a]">Trending in Technology</p>
                                     <p class="font-bold">#WebDev2024</p>
-                                    <p class="text-xs text-slate-500">12.5k Posts</p>
+                                    <p class="text-xs text-[#60758a]">12.5k Posts</p>
                                 </a>
                                 <a class="px-4 py-3 hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
                                     href="#">
-                                    <p class="text-xs text-slate-500">Design</p>
+                                    <p class="text-xs text-[#60758a]">Trending in Design</p>
                                     <p class="font-bold">#TailwindCSS</p>
-                                    <p class="text-xs text-slate-500">8.2k Posts</p>
+                                    <p class="text-xs text-[#60758a]">8.2k Posts</p>
+                                </a>
+                                <a class="px-4 py-3 hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
+                                    href="#">
+                                    <p class="text-xs text-[#60758a]">AI · Trending</p>
+                                    <p class="font-bold">#ChatGPT</p>
+                                    <p class="text-xs text-[#60758a]">45.1k Posts</p>
+                                </a>
+                                <a class="px-4 py-3 hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
+                                    href="#">
+                                    <p class="text-xs text-[#60758a]">Programming</p>
+                                    <p class="font-bold">#RustLang</p>
+                                    <p class="text-xs text-[#60758a]">3.4k Posts</p>
                                 </a>
                             </div>
-                            <button
-                                class="w-full text-left px-4 py-4 text-primary text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800/50">Show
-                                more</button>
+                            <div class="px-4 py-3 border-t border-[#f0f2f5] dark:border-slate-700">
+                                <button class="text-primary text-sm font-semibold hover:underline">Show more</button>
+                            </div>
                         </section>
-
+                        <!-- Notification Panel -->
+                        <section
+                            class="bg-white dark:bg-[#1a242f] rounded-xl border border-[#f0f2f5] dark:border-slate-700 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-[#f0f2f5] dark:border-slate-700">
+                                <h3 class="font-bold text-lg">Recent Notifications</h3>
+                            </div>
+                            <div class="flex flex-col">
+                                <div
+                                    class="px-4 py-3 flex gap-3 hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                                    <span class="material-symbols-outlined text-red-500 fill-current">favorite</span>
+                                    <div>
+                                        <p class="text-sm"><strong>Maria</strong> liked your post</p>
+                                        <p class="text-xs text-[#60758a]">15m ago</p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="px-4 py-3 flex gap-3 hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors cursor-pointer">
+                                    <span class="material-symbols-outlined text-primary fill-current">person_add</span>
+                                    <div>
+                                        <p class="text-sm"><strong>Leo Hayes</strong> followed you</p>
+                                        <p class="text-xs text-[#60758a]">1h ago</p>
+                                    </div>
+                                </div>
+                                <div
+                                    class="px-4 py-3 flex gap-3 hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors cursor-pointer border-l-4 border-primary bg-primary/5">
+                                    <span class="material-symbols-outlined text-primary">chat</span>
+                                    <div>
+                                        <p class="text-sm"><strong>Chen</strong> replied to your comment</p>
+                                        <p class="text-xs text-[#60758a]">2h ago</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="px-4 py-3 border-t border-[#f0f2f5] dark:border-slate-700">
+                                <button class="text-primary text-sm font-semibold hover:underline">View all</button>
+                            </div>
+                        </section>
+                        <!-- Footer Links -->
                         <footer class="px-4 flex flex-wrap gap-x-4 gap-y-1">
-                            <a class="text-xs text-slate-500 hover:underline" href="#">Terms</a>
-                            <a class="text-xs text-slate-500 hover:underline" href="#">Privacy</a>
-                            <a class="text-xs text-slate-500 hover:underline" href="#">Cookies</a>
-                            <p class="text-xs text-slate-500">© 2024 SocialApp</p>
+                            <a class="text-xs text-[#60758a] hover:underline" href="#">Terms of Service</a>
+                            <a class="text-xs text-[#60758a] hover:underline" href="#">Privacy Policy</a>
+                            <a class="text-xs text-[#60758a] hover:underline" href="#">Cookie Policy</a>
+                            <a class="text-xs text-[#60758a] hover:underline" href="#">Accessibility</a>
+                            <p class="text-xs text-[#60758a]">© 2024 SocialApp, Inc.</p>
                         </footer>
                     </div>
                 </aside>
             </div>
         </main>
     </div>
-
-    <script>
-        const postContent = document.getElementById('postContent');
-        const submitPost = document.getElementById('submitPost');
-        const attachmentPreviews = document.getElementById('attachmentPreviews');
-        const inputImage = document.getElementById('inputImage');
-        const inputCalendar = document.getElementById('inputCalendar');
-        const emojiPanel = document.getElementById('emojiPanel');
-        const picker = document.querySelector('emoji-picker');
-
-        let selectedImage = null;
-        let selectedCalendar = null;
-
-        // Auto-resize textarea
-        postContent.addEventListener('input', function () {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            validatePost();
-        });
-
-        function validatePost() {
-            const hasContent = postContent.value.trim().length > 0 || selectedImage !== null;
-            submitPost.disabled = !hasContent;
-        }
-
-        // Action Buttons
-        document.getElementById('btnImage').onclick = () => inputImage.click();
-        document.getElementById('btnCalendar').onclick = () => inputCalendar.click();
-        document.getElementById('btnEmoji').onclick = (e) => {
-            e.stopPropagation();
-            emojiPanel.classList.toggle('hidden');
-        };
-
-        // File/Date Inputs
-        inputImage.onchange = (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (f) => {
-                    selectedImage = f.target.result;
-                    renderPreviews();
-                    validatePost();
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-
-        inputCalendar.onchange = (e) => {
-            selectedCalendar = e.target.value;
-            renderPreviews();
-        };
-
-        // Emoji Picker
-        picker.addEventListener('emoji-click', event => {
-            const emoji = event.detail.unicode;
-            const start = postContent.selectionStart;
-            const end = postContent.selectionEnd;
-            postContent.value = postContent.value.substring(0, start) + emoji + postContent.value.substring(end);
-            postContent.selectionStart = postContent.selectionEnd = start + emoji.length;
-            postContent.dispatchEvent(new Event('input'));
-            emojiPanel.classList.add('hidden');
-            postContent.focus();
-        });
-
-        // Click outside closes panels
-        document.addEventListener('click', (e) => {
-            if (!emojiPanel.contains(e.target) && e.target.id !== 'btnEmoji') {
-                emojiPanel.classList.add('hidden');
-            }
-        });
-
-        function renderPreviews() {
-            attachmentPreviews.innerHTML = '';
-            if (selectedImage) {
-                const el = createPreviewContainer('image', selectedImage, () => {
-                    selectedImage = null;
-                    inputImage.value = '';
-                    renderPreviews();
-                    validatePost();
-                });
-                attachmentPreviews.appendChild(el);
-            }
-            if (selectedCalendar) {
-                const el = createPreviewContainer('event', selectedCalendar, () => {
-                    selectedCalendar = null;
-                    inputCalendar.value = '';
-                    renderPreviews();
-                });
-                attachmentPreviews.appendChild(el);
-            }
-        }
-
-        function createPreviewContainer(type, src, onRemove) {
-            const div = document.createElement('div');
-            div.className = "relative group";
-            let html = '';
-            if (type === 'image') {
-                html = `<img src="${src}" class="size-24 rounded-lg object-cover border border-slate-200" />`;
-            } else {
-                html = `<div class="p-2 border border-primary/20 bg-primary/5 rounded-lg text-primary text-xs font-bold leading-tight flex items-center gap-2">
-                        <span class="material-symbols-outlined text-sm">event</span> ${new Date(src).toLocaleDateString()}
-                    </div>`;
-            }
-            div.innerHTML = `${html}<button class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full size-6 flex items-center justify-center text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity">✕</button>`;
-            div.querySelector('button').onclick = onRemove;
-            return div;
-        }
-
-        // Submit Post
-        submitPost.onclick = async () => {
-            const content = postContent.value.trim();
-            if (!content && !selectedImage) return;
-
-            submitPost.disabled = true;
-            submitPost.innerText = 'Posting...';
-
-            try {
-                const res = await fetch('/api/posts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contentText: content,
-                        contentImage: selectedImage,
-                        contentCalendar: selectedCalendar
-                    })
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    // Reset
-                    postContent.value = '';
-                    postContent.style.height = 'auto'; // Reset height
-                    selectedImage = null;
-                    selectedCalendar = null;
-                    inputImage.value = '';
-                    inputCalendar.value = '';
-                    renderPreviews();
-                    submitPost.innerText = 'Post';
-
-                    // Simple real-time update (prepend to feed)
-                    const postFeed = document.getElementById('postFeed');
-                    const emptyState = postFeed.querySelector('.text-center.py-20');
-                    if (emptyState) emptyState.remove();
-
-                    const newPostHtml = `
-                        <article class="bg-white dark:bg-[#1a242f] rounded-xl border border-[#f0f2f5] dark:border-slate-700 overflow-hidden shadow-sm animate-pulse">
-                            <div class="p-4">
-                                <div class="flex items-start justify-between">
-                                    <div class="flex gap-3">
-                                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 border border-slate-100" style="background-image: url('https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png');"></div>
-                                        <div>
-                                            <h4 class="font-bold text-[#111418] dark:text-white leading-tight">You</h4>
-                                            <p class="text-xs text-[#60758a]">Just now</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mt-3">
-                                    ${content ? `<p class="text-[#111418] dark:text-slate-200 leading-relaxed mb-4 whitespace-pre-wrap">${content}</p>` : ''}
-                                    ${selectedImage ? `<div class="w-full rounded-xl overflow-hidden border border-[#f0f2f5] dark:border-slate-700 mb-4 bg-slate-50"><img src="${selectedImage}" class="w-full h-auto object-contain max-h-[500px]" /></div>` : ''}
-                                </div>
-                            </div>
-                        </article>
-                    `;
-                    postFeed.insertAdjacentHTML('afterbegin', newPostHtml);
-                    setTimeout(() => {
-                        postFeed.firstElementChild.classList.remove('animate-pulse');
-                    }, 1000);
-                } else {
-                    alert(data.message || 'Error creating post');
-                    submitPost.disabled = false;
-                    submitPost.innerText = 'Post';
-                }
-            } catch (err) {
-                console.error(err);
-                alert('Connection error. Try again.');
-                submitPost.disabled = false;
-                submitPost.innerText = 'Post';
-            }
-        };
-    </script>
 </body>
 
 </html>
