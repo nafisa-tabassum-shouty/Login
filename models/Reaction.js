@@ -3,8 +3,12 @@ const mongoose = require('mongoose');
 const reactionSchema = new mongoose.Schema({
     post_id: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Post',
-        required: true
+        ref: 'Post'
+    },
+    comment_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment',
+        default: null
     },
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
@@ -13,7 +17,7 @@ const reactionSchema = new mongoose.Schema({
     },
     reaction_type: {
         type: String,
-        enum: ['like', 'love', 'haha', 'wow', 'sad', 'angry'],
+        enum: ['like', 'love', 'haha', 'wow', 'sad', 'angry', 'care'],
         default: 'like'
     }
 }, {

@@ -25,6 +25,7 @@ exports.register = async (req, res) => {
 
         if (user) {
             req.session.userId = user._id;
+            req.session.userName = user.fullName;
             res.redirect('/dashboard');
         } else {
             res.status(400).send('Invalid user data');
@@ -58,6 +59,7 @@ exports.login = async (req, res) => {
 
         // Login successful
         req.session.userId = user._id;
+        req.session.userName = user.fullName;
         res.redirect('/dashboard');
     } catch (err) {
         console.error(err);
@@ -163,4 +165,17 @@ exports.resetPassword = async (req, res) => {
         console.error('RESET PASSWORD ERROR:', err);
         res.status(500).send('Server Error: ' + err.message);
     }
+};
+
+// @desc    Logout user
+// @route   GET /logout
+// @access  Private
+exports.logout = (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.redirect('/dashboard');
+        }
+        res.clearCookie('connect.sid');
+        res.redirect('/login');
+    });
 };

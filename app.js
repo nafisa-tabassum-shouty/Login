@@ -4,6 +4,8 @@ const path = require('path');
 const connectDB = require('./config/db');
 const viewRouter = require('./routes/viewRoutes');
 const authRouter = require('./routes/authRoutes');
+const postRouter = require('./routes/postRoutes');
+const commentRouter = require('./routes/commentRoutes');
 
 
 const session = require('express-session');
@@ -40,6 +42,7 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Serve static assets from public folder
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Routes
 app.get('/', (req, res) => {
@@ -51,6 +54,8 @@ app.get('/', (req, res) => {
 });
 app.use('/', viewRouter);
 app.use('/', authRouter);
+app.use('/', postRouter);
+app.use('/', commentRouter);
 
 
 

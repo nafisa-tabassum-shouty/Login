@@ -21,6 +21,25 @@ const postSchema = new mongoose.Schema({
     },
     content_calendar: {
         type: Date
+    },
+    poll: {
+        question: String,
+        options: [{
+            text: String,
+            votes: [{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            }]
+        }],
+        expires_at: Date
+    },
+    scheduled_at: {
+        type: Date,
+        default: null
+    },
+    is_scheduled: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }

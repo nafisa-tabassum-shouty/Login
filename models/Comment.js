@@ -15,6 +15,16 @@ const commentSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add some text'],
         trim: true
+    },
+    parent_comment_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Comment',
+        default: null
+    },
+    reply_to_user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
     }
 }, {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }
