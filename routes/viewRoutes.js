@@ -10,6 +10,9 @@ router.get('/verify-otp', viewController.getVerifyOTPForm);
 router.get('/privacy-policy', viewController.getPrivacyPolicy);
 router.get('/terms-of-service', viewController.getTermsOfService);
 router.get('/dashboard', viewController.getDashboard);
+router.get('/profile', viewController.getUserProfile);
+router.get('/profile/edit', viewController.getEditProfileForm);
+router.get('/notifications', viewController.getNotifications);
 
 
 module.exports = router;

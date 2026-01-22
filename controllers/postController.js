@@ -86,7 +86,9 @@ exports.createPost = (req, res) => {
 // @access  Private
 exports.getPosts = async (req, res) => {
     try {
+        const user_id = req.user ? req.user._id : req.session.userId;
         const posts = await Post.find({
+            user_id,
             $or: [
                 { is_scheduled: { $ne: true } },
                 { scheduled_at: { $lte: new Date() } }
@@ -148,6 +150,9 @@ exports.votePost = async (req, res) => {
     }
 };
 const Reaction = require('../models/Reaction');
+const Notification = require('../models/Notification');
+const User = require('../models/User'); // Required for fullName
+const mongoose = require('mongoose');
 
 // @desc    Toggle reaction (add/update/remove)
 // @route   POST /posts/:id/react
@@ -182,6 +187,34 @@ exports.toggleReaction = async (req, res) => {
                 reaction_type
             });
             await newReaction.save();
+
+            // Notification for Reaction on Post
+            try {
+                console.log('--- Post Reaction Notification Started ---');
+                const post = await Post.findById(post_id);
+                const sender = await User.findById(user_id);
+                if (post) {
+                    console.log('Post owner:', post.user_id.toString());
+                    console.log('Current user:', user_id.toString());
+                    if (post.user_id.toString() !== user_id.toString()) {
+                        const notif = await Notification.create({
+                            user_id: post.user_id,
+                            sender_id: user_id,
+                            type: 'like',
+                            message: `${sender.fullName} reacted to your post`,
+                            content_id: post_id,
+                            on_model: 'Post'
+                        });
+                        console.log('Post Reaction Notification Created:', notif._id);
+                    } else {
+                        console.log('Self-reaction detected, skipping notification');
+                    }
+                } else {
+                    console.log('Post not found for notification logic');
+                }
+            } catch (notifErr) {
+                console.error('Post Reaction Notification Error Detail:', notifErr);
+            }
         }
 
         // Get updated counts

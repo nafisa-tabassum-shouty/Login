@@ -4,11 +4,22 @@ const notificationSchema = new mongoose.Schema({
     user_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
+        description: 'The recipient of the notification'
+    },
+    sender_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        description: 'The user who triggered the notification'
     },
     type: {
         type: String,
-        enum: ['like', 'comment', 'follow', 'mention'],
+        enum: ['like', 'comment', 'reply', 'follow', 'mention'],
+        required: true
+    },
+    message: {
+        type: String,
         required: true
     },
     content_id: {

@@ -1,5 +1,7 @@
 const Comment = require('../models/Comment');
 const Reaction = require('../models/Reaction');
+const Post = require('../models/Post');
+const Notification = require('../models/Notification');
 const mongoose = require('mongoose');
 
 // @desc    Add a comment or reply
@@ -35,7 +37,57 @@ exports.createComment = async (req, res) => {
         // Populate for immediate UI update
         const populatedComment = await Comment.findById(newComment._id)
             .populate('user_id', 'fullName profile_picture username')
-            .populate('reply_to_user_id', 'username');
+            .populate('reply_to_user_id', 'fullName username');
+
+        // Notification Logic
+        try {
+            console.log('--- Notification Logic Started ---');
+            if (parent_comment_id) {
+                console.log('Detected reply to:', parent_comment_id);
+                const parentComment = await Comment.findById(parent_comment_id);
+                if (parentComment) {
+                    console.log('Parent comment owner:', parentComment.user_id.toString());
+                    console.log('Current user:', user_id.toString());
+                    if (parentComment.user_id.toString() !== user_id.toString()) {
+                        const notif = await Notification.create({
+                            user_id: parentComment.user_id,
+                            sender_id: user_id,
+                            type: 'reply',
+                            message: `${populatedComment.user_id.fullName} replied to your comment`,
+                            content_id: newComment._id,
+                            on_model: 'Comment'
+                        });
+                        console.log('Reply Notification Created:', notif._id);
+                    } else {
+                        console.log('Self-reply detected, skipping notification');
+                    }
+                }
+            } else {
+                console.log('Detected top-level comment on post:', post_id);
+                const post = await Post.findById(post_id);
+                if (post) {
+                    console.log('Post owner:', post.user_id.toString());
+                    console.log('Current user:', user_id.toString());
+                    if (post.user_id.toString() !== user_id.toString()) {
+                        const notif = await Notification.create({
+                            user_id: post.user_id,
+                            sender_id: user_id,
+                            type: 'comment',
+                            message: `${populatedComment.user_id.fullName} commented on your post`,
+                            content_id: post_id,
+                            on_model: 'Post'
+                        });
+                        console.log('Comment Notification Created:', notif._id);
+                    } else {
+                        console.log('Self-comment detected, skipping notification');
+                    }
+                } else {
+                    console.log('Post not found for notification logic');
+                }
+            }
+        } catch (notifErr) {
+            console.error('Notification Error Detail:', notifErr);
+        }
 
         res.status(201).json({
             success: true,
@@ -78,7 +130,7 @@ exports.getComments = async (req, res) => {
             // Get replies
             const replies = await Comment.find({ parent_comment_id: comment._id })
                 .populate('user_id', 'fullName profile_picture username')
-                .populate('reply_to_user_id', 'username')
+                .populate('reply_to_user_id', 'fullName username')
                 .sort({ created_at: 1 });
 
             // Get reaction data for comment
@@ -152,6 +204,24 @@ exports.toggleReaction = async (req, res) => {
                 reaction_type
             });
             await newReaction.save();
+
+            // Notification for Reaction on Comment
+            try {
+                const comment = await Comment.findById(comment_id).populate('user_id');
+                const sender = await mongoose.model('User').findById(user_id);
+                if (comment && comment.user_id._id.toString() !== user_id.toString()) {
+                    await Notification.create({
+                        user_id: comment.user_id._id,
+                        sender_id: user_id,
+                        type: 'like',
+                        message: `${sender.fullName} reacted to your comment`,
+                        content_id: comment_id,
+                        on_model: 'Comment'
+                    });
+                }
+            } catch (notifErr) {
+                console.error('Reaction Notification Error:', notifErr);
+            }
         }
 
         const data = await exports.getReactionData(comment_id, user_id);

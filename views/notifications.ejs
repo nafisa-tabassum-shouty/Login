@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Notifications | SocialApp</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white transition-colors duration-200">
+    <div class="flex flex-col min-h-screen">
+        <!-- Top Navbar -->
+        <header
+            class="sticky top-0 z-50 w-full bg-white dark:bg-[#1a242f] border-b border-[#f0f2f5] dark:border-slate-700 px-4 md:px-10 py-3">
+            <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4 text-primary">
+                    <a href="/dashboard" class="flex items-center gap-4">
+                        <div class="size-8">
+                            <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                                    fill="currentColor"></path>
+                            </svg>
+                        </div>
+                        <h2
+                            class="text-[#111418] dark:text-white text-xl font-bold leading-tight tracking-tight hidden sm:block">
+                            SocialApp</h2>
+                    </a>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="flex size-10 items-center justify-center rounded-lg bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white"
+                        onclick="document.documentElement.classList.toggle('dark')">
+                        <span class="material-symbols-outlined">dark_mode</span>
+                    </button>
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-[800px] mx-auto w-full px-4 py-8">
+            <div class="flex items-center justify-between mb-6">
+                <h1 class="text-2xl font-bold">Notifications</h1>
+                <button class="text-primary text-sm font-medium hover:underline">Mark all as read</button>
+            </div>
+
+            <div
+                class="bg-white dark:bg-[#1a242f] rounded-xl border border-[#f0f2f5] dark:border-slate-700 overflow-hidden shadow-sm">
+                <% if (notifications.length===0) { %>
+                    <div class="p-12 text-center">
+                        <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">notifications_off</span>
+                        <p class="text-slate-500">No notifications yet.</p>
+                    </div>
+                    <% } else { %>
+                        <% notifications.forEach(notif=> { %>
+                            <div
+                                class="p-4 border-b border-[#f0f2f5] dark:border-slate-700 flex gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors <%= notif.read ? '' : 'bg-primary/5' %>">
+                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12 shrink-0"
+                                    style='background-image: url("/uploads/<%= (notif.sender_id && notif.sender_id.profile_picture) || "default-profile.png" %>");'>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-sm">
+                                            <span class="font-bold">
+                                                <%= (notif.sender_id && notif.sender_id.fullName) || 'Someone' %>
+                                            </span>
+                                            <span class="text-slate-600 dark:text-slate-400">
+                                                <% if (notif.type==='like' ) { %> reacted to your <%=
+                                                        notif.on_model.toLowerCase() %>
+                                                        <% } else if (notif.type==='comment' ) { %> commented on your
+                                                            post
+                                                            <% } else if (notif.type==='reply' ) { %> replied to your
+                                                                comment
+                                                                <% } else { %>
+                                                                    <%= notif.message %>
+                                                                        <% } %>
+                                            </span>
+                                        </p>
+                                        <span class="text-[10px] text-slate-400">
+                                            <%= new Date(notif.created_at).toLocaleDateString() %>
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-1">
+                                        <%= notif.message %>
+                                    </p>
+                                </div>
+                                <% if (!notif.read) { %>
+                                    <div class="size-2 rounded-full bg-primary mt-2"></div>
+                                    <% } %>
+                            </div>
+                            <% }); %>
+                                <% } %>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

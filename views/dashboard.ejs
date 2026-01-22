@@ -242,7 +242,7 @@
                                 <span class="text-base font-medium">Explore</span>
                             </a>
                             <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
-                                href="#">
+                                href="/notifications">
                                 <span class="material-symbols-outlined">notifications</span>
                                 <span class="text-base font-medium">Notifications</span>
                             </a>
@@ -257,7 +257,7 @@
                                 <span class="text-base font-medium">Bookmarks</span>
                             </a>
                             <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
-                                href="#">
+                                href="/profile">
                                 <span class="material-symbols-outlined">person</span>
                                 <span class="text-base font-medium">Profile</span>
                             </a>
@@ -699,7 +699,8 @@
 
                                                                     <!-- Comments Section -->
                                                                     <div class="comments-section mt-4 px-4 border-t border-gray-50 dark:border-slate-800"
-                                                                        id="comments-<%= post._id %>">
+                                                                        id="comments-<%= post._id %>"
+                                                                        data-post-id="<%= post._id %>">
                                                                         <!-- Comment Input -->
                                                                         <div class="flex gap-3 py-4">
                                                                             <div class="shrink-0">
@@ -1179,7 +1180,7 @@
                         loadMoreBtn.classList.add('hidden');
                     }
                 }
-                initCommentActions(section, postId);
+                // initCommentActions removed (handled by delegation)
             } catch (err) {
                 console.error('Error loading comments:', err);
             } finally {
@@ -1189,26 +1190,83 @@
 
         function renderCommentItem(comment, isReply = false) {
             const timeAgo = formatTimeAgo(comment.created_at);
+
+            // Helper to generate reaction button HTML
+            const getReactionBtnContent = (userReaction) => {
+                const emojiMap = {
+                    like: { icon: '<span class="material-symbols-outlined fill-current text-primary">thumb_up</span>', label: 'Like', color: 'text-primary' },
+                    love: { icon: '<span class="text-[20px]">❤️</span>', label: 'Love', color: 'text-red-500' },
+                    haha: { icon: '<span class="text-[20px]">😂</span>', label: 'Haha', color: 'text-yellow-500' },
+                    wow: { icon: '<span class="text-[20px]">😮</span>', label: 'Wow', color: 'text-yellow-500' },
+                    sad: { icon: '<span class="text-[20px]">😢</span>', label: 'Sad', color: 'text-yellow-500' },
+                    angry: { icon: '<span class="text-[20px]">😡</span>', label: 'Angry', color: 'text-orange-600' },
+                    care: { icon: '<span class="text-[20px]">🥰</span>', label: 'Care', color: 'text-yellow-500' }
+                };
+                if (userReaction && emojiMap[userReaction]) {
+                    const config = emojiMap[userReaction];
+                    return `${config.icon}<span class="text-xs font-bold ${config.color}">${config.label}</span>`;
+                }
+                return '<span class="material-symbols-outlined text-[18px]">thumb_up</span><span class="text-xs font-bold group-hover:text-primary">Like</span>';
+            };
+
+            const reactionBtnContent = getReactionBtnContent(comment.userReaction);
+            const reactionClass = comment.userReaction ? 'text-primary' : 'text-[#60758a] hover:text-primary';
+
+            // Fix: Fallback for missing username
+            const displayHandle = comment.user_id.username || comment.user_id.fullName.replace(/\s+/g, '').toLowerCase();
+
+            // Generate breakdown HTML
+            let breakdownHtml = '';
+            if (comment.reactionCount > 0 && comment.reactionBreakdown) {
+                breakdownHtml = '<div class="flex -space-x-1 mr-1">';
+                const sortedTypes = Object.keys(comment.reactionBreakdown).sort((a, b) => comment.reactionBreakdown[b] - comment.reactionBreakdown[a]).slice(0, 3);
+                sortedTypes.forEach(type => {
+                    const emoji = { like: '👍', love: '❤️', haha: '😂', wow: '😮', sad: '😢', angry: '😡', care: '🥰' }[type];
+                    breakdownHtml += `<span class="size-3 flex items-center justify-center bg-white dark:bg-slate-800 rounded-full border border-gray-100 dark:border-slate-700 text-[10px]" title="${type}">${emoji}</span>`;
+                });
+                breakdownHtml += `</div><span class="total-count text-[10px]">${comment.reactionCount}</span>`;
+            }
+
             return `
                 <div class="flex gap-3 ${isReply ? 'ml-12' : ''}" id="comment-${comment._id}">
                     <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 shrink-0" 
                         style='background-image: url("/uploads/${comment.user_id.profile_picture || "default-profile.png"}");'>
                     </div>
                     <div class="flex-1">
-                        <div class="bg-[#f0f2f5] dark:bg-slate-800 rounded-2xl px-3 py-2">
-                            <div class="flex items-center justify-between">
+                        <div class="bg-[#f0f2f5] dark:bg-slate-800 rounded-2xl px-3 py-2 inline-block min-w-[200px]">
+                            <div class="flex items-center justify-between gap-4">
                                 <span class="font-bold text-xs capitalize">${comment.user_id.fullName}</span>
                                 <span class="text-[10px] text-[#60758a]">${timeAgo}</span>
                             </div>
                             <p class="text-sm mt-0.5">
-                                ${comment.reply_to_user_id ? `<span class="text-primary font-medium">@${comment.reply_to_user_id.username}</span> ` : ''}
+                                ${comment.reply_to_user_id ? `<span class="text-primary font-medium">@${comment.reply_to_user_id.username || comment.reply_to_user_id.fullName.replace(/\s+/g, '').toLowerCase()}</span> ` : ''}
                                 ${comment.comment_text}
                             </p>
+                            <!-- Reaction Summary (Floating bottom right of bubble) -->
+                            <div class="reaction-summary flex items-center gap-1 justify-end mt-1 h-4">
+                                ${breakdownHtml}
+                            </div>
                         </div>
-                        <div class="flex items-center gap-4 mt-1 px-2">
-                            <button class="text-xs font-bold text-[#60758a] hover:text-primary">Like</button>
+                        <div class="flex items-center gap-4 mt-1 px-2 relative">
+                            <!-- Comment Reaction Container -->
+                            <div class="relative reaction-container group" data-comment-id="${comment._id}">
+                                <button class="reaction-btn flex items-center gap-1 hover:bg-gray-100 dark:hover:bg-slate-700 px-2 py-1 rounded-full transition-colors ${reactionClass}">
+                                    ${reactionBtnContent}
+                                </button>
+                                <!-- Reaction Picker -->
+                                <div class="reaction-picker absolute bottom-full left-0 mb-2 bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700 rounded-full px-2 py-1 flex gap-2 z-[100]">
+                                    ${['like', 'love', 'care', 'haha', 'wow', 'sad', 'angry'].map(type => `
+                                        <div class="relative group/emoji">
+                                            <button class="reaction-emoji text-xl p-1 hover:scale-125 transition-transform" data-type="${type}">
+                                                ${{ like: '👍', love: '❤️', care: '🥰', haha: '😂', wow: '😮', sad: '😢', angry: '😡' }[type]}
+                                            </button>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+
                             <button class="reply-btn text-xs font-bold text-[#60758a] hover:text-primary" 
-                                data-user="${comment.user_id.username}" data-id="${comment.parent_comment_id || comment._id}">Reply</button>
+                                data-user="${displayHandle}" data-id="${comment.parent_comment_id || comment._id}">Reply</button>
                         </div>
                         <div class="replies-container mt-2">
                             ${comment.replies ? comment.replies.map(r => renderCommentItem(r, true)).join('') : ''}
@@ -1218,63 +1276,130 @@
             `;
         }
 
-        function initCommentActions(section, postId) {
-            section.querySelectorAll('.reply-btn').forEach(btn => {
-                if (btn.dataset.initialized) return;
-                btn.dataset.initialized = "true";
-                btn.addEventListener('click', () => {
-                    const input = section.querySelector('.comment-input');
-                    input.value = `@${btn.dataset.user} `;
-                    input.dataset.parentId = btn.dataset.id;
-                    input.focus();
+        // Delegated Reply Logic
+        document.body.addEventListener('click', (e) => {
+            const btn = e.target.closest('.reply-btn');
+            if (!btn) return;
+
+            const commentSection = btn.closest('.comments-section');
+            if (!commentSection) return;
+
+            const input = commentSection.querySelector('.comment-input');
+            if (input) {
+                input.value = `@${btn.dataset.user} `;
+                input.dataset.parentId = btn.dataset.id;
+                input.focus();
+
+                // Scroll to input if needed
+                input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+
+        // Comment Submission Logic with Debugging
+        // Defined at global scope to ensure it runs immediately
+        console.log("Initializing comment submission logic...");
+
+        document.body.addEventListener("click", async (e) => {
+            const btn = e.target.closest(".submit-comment-btn");
+            if (!btn) return;
+
+            e.preventDefault(); // Prevent any default form submission
+            console.log("Submit button clicked", btn);
+
+            const commentSection = btn.closest(".comments-section");
+            if (!commentSection) {
+                console.error("No comment section found for button");
+                return;
+            }
+
+            const postId = commentSection.dataset.postId;
+            const textarea = commentSection.querySelector(".comment-input");
+            const commentText = textarea.value.trim();
+            const commentsContainer = commentSection.querySelector(".comments-container");
+            const emptyMessage = commentSection.querySelector(".empty-comments");
+            const parentId = textarea.dataset.parentId || null;
+
+            console.log(`Submitting comment for post ${postId}. Text: "${commentText}". Parent: ${parentId}`);
+
+            if (!commentText) {
+                alert("Comment cannot be empty!");
+                return;
+            }
+
+            try {
+                // Disable button while sending
+                btn.disabled = true;
+
+                const res = await fetch(`/posts/${postId}/comments`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        comment_text: commentText,
+                        parent_comment_id: parentId
+                    })
                 });
-            });
-        }
 
-        function setupCommentInputs() {
-            document.querySelectorAll('.comments-section').forEach(section => {
-                const input = section.querySelector('.comment-input');
-                const submitBtn = section.querySelector('.submit-comment-btn');
-                const postId = section.id.replace('comments-', '');
+                console.log("Response status:", res.status);
 
-                const submit = async () => {
-                    const text = input.value.trim();
-                    if (!text) return;
+                if (!res.ok) {
+                    const text = await res.text();
+                    throw new Error(`Server error: ${res.status} ${text}`);
+                }
 
-                    try {
-                        submitBtn.disabled = true;
-                        const res = await fetch(`/posts/${postId}/comments`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                comment_text: text,
-                                parent_comment_id: input.dataset.parentId || null
-                            })
-                        });
-                        if (res.ok) {
-                            const data = await res.json();
-                            const container = section.querySelector('.comments-container');
-                            if (input.dataset.parentId) {
-                                const parent = section.querySelector(`#comment-${input.dataset.parentId} .replies-container`);
-                                parent.insertAdjacentHTML('beforeend', renderCommentItem(data.comment, true));
-                            } else {
-                                container.insertAdjacentHTML('afterbegin', renderCommentItem(data.comment));
-                                section.querySelector('.empty-comments').classList.add('hidden');
-                            }
-                            input.value = '';
-                            delete input.dataset.parentId;
+                const data = await res.json();
+                if (!data.success) throw new Error(data.message || "Failed to post comment");
+
+                console.log("Comment submitted successfully", data);
+
+                // Add new comment to the top of the container
+                const comment = data.comment;
+                // Check if it's a reply or top-level
+                if (parentId) {
+                    // Find the parent comment's reply container
+                    const parentComment = commentSection.querySelector(`#comment-${parentId}`);
+                    if (parentComment) {
+                        const repliesContainer = parentComment.querySelector('.replies-container') || parentComment; // Fallback
+                        // Using existing renderCommentItem if available, or manual HTML
+                        if (typeof renderCommentItem === 'function') {
+                            repliesContainer.insertAdjacentHTML("beforeend", renderCommentItem(comment, true));
+                        } else {
+                            // Fallback HTML for reply
+                            console.warn("renderCommentItem not found, using fallback HTML");
+                            // ... (Simplified fallback if needed, but renderCommentItem should be available below)
                         }
-                    } catch (err) {
-                        console.error('Error posting comment:', err);
-                    } finally {
-                        submitBtn.disabled = false;
                     }
-                };
+                } else {
+                    // Top level
+                    if (typeof renderCommentItem === 'function') {
+                        commentsContainer.insertAdjacentHTML("afterbegin", renderCommentItem(comment, false));
+                    } else {
+                        // Fallback manual HTML (from previous iteration)
+                        const commentHTML = `
+                        <div class="comment-item flex gap-3 py-2" data-comment-id="${comment._id}">
+                        <div class="shrink-0">
+                            <img src="/uploads/${comment.user_id.profile_picture || 'default-profile.png'}" class="size-8 rounded-full" />
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm"><strong>${comment.user_id.fullName}</strong> ${comment.comment_text}</p>
+                        </div>
+                        </div>
+                        `;
+                        commentsContainer.insertAdjacentHTML("afterbegin", commentHTML);
+                    }
+                    emptyMessage.classList.add("hidden");
+                }
 
-                submitBtn.addEventListener('click', submit);
-                input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); } });
-            });
-        }
+                // Clear textarea and parentId
+                textarea.value = "";
+                delete textarea.dataset.parentId;
+
+            } catch (err) {
+                console.error("Submission error:", err);
+                alert("Error submitting comment: " + err.message);
+            } finally {
+                btn.disabled = false;
+            }
+        });
 
         function formatTimeAgo(date) {
             const seconds = Math.floor((new Date() - new Date(date)) / 1000);
@@ -1286,43 +1411,80 @@
             return `${Math.floor(hours / 24)}d`;
         }
 
-        // Reaction Logic
-        document.querySelectorAll('.reaction-container').forEach(container => {
-            const btn = container.querySelector('.reaction-btn');
-            const picker = container.querySelector('.reaction-picker');
+
+
+        // Initial Load Logic (Replaced by delegation)
+        // document.querySelectorAll('.reaction-container').forEach... removed
+
+        // Delegated Reaction Logic for Posts and Comments
+        document.body.addEventListener('click', (e) => {
+            const btn = e.target.closest('.reaction-btn');
+            if (!btn) return;
+            const container = btn.closest('.reaction-container');
+            if (!container) return;
+
+            // Check if it's a mobile long-press trigger (handled by separate touch events if needed, 
+            // but for click we just toggle default like or specific reaction if already reacted)
+
+            const isReacted = btn.classList.contains('text-primary') || btn.querySelector('.text-[20px]');
+            const labelEl = btn.querySelector('span:last-child');
+            const currentLabel = labelEl ? labelEl.textContent.toLowerCase() : 'like';
+
+            // Determine if it's a post or comment reaction
             const postId = container.dataset.postId;
-            let longPressTimer;
+            const commentId = container.dataset.commentId;
+            const id = postId || commentId;
+            const type = postId ? 'post' : 'comment';
 
-            btn.addEventListener('touchstart', (e) => {
-                longPressTimer = setTimeout(() => {
-                    container.classList.add('show-picker');
-                }, 500);
-            }, { passive: true });
-
-            btn.addEventListener('touchend', () => clearTimeout(longPressTimer));
-
-            btn.addEventListener('click', (e) => {
-                const isReacted = btn.classList.contains('text-primary') || btn.querySelector('.text-[20px]');
-                const labelEl = btn.querySelector('span:last-child');
-                const currentLabel = labelEl ? labelEl.textContent.toLowerCase() : 'like';
-                handleReaction(postId, isReacted ? currentLabel : 'like', container);
-            });
-
-            picker.querySelectorAll('.reaction-emoji').forEach(emojiBtn => {
-                emojiBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    handleReaction(postId, emojiBtn.dataset.type, container);
-                    container.classList.remove('show-picker');
-                });
-            });
+            handleReaction(id, type, isReacted ? currentLabel : 'like', container);
         });
 
-        async function handleReaction(postId, type, container) {
+        document.body.addEventListener('click', (e) => {
+            const emojiBtn = e.target.closest('.reaction-emoji');
+            if (!emojiBtn) return;
+
+            const container = emojiBtn.closest('.reaction-container');
+            if (!container) return;
+
+            const postId = container.dataset.postId;
+            const commentId = container.dataset.commentId;
+            const id = postId || commentId;
+            const type = postId ? 'post' : 'comment';
+
+            handleReaction(id, type, emojiBtn.dataset.type, container);
+            container.classList.remove('show-picker');
+        });
+
+        // Hover/Touch handling for picker
+        document.body.addEventListener('touchstart', (e) => {
+            const btn = e.target.closest('.reaction-btn');
+            if (!btn) return;
+            const container = btn.closest('.reaction-container');
+            if (!container) return;
+
+            setTimeout(() => {
+                container.classList.add('show-picker');
+            }, 500);
+        }, { passive: true });
+
+        // Close picker when clicking outside
+        document.body.addEventListener('click', (e) => {
+            if (!e.target.closest('.reaction-container')) {
+                document.querySelectorAll('.reaction-container.show-picker').forEach(el => el.classList.remove('show-picker'));
+            }
+        });
+
+
+        async function handleReaction(id, targetType, reactionType, container) {
             try {
-                const response = await fetch(`/posts/${postId}/react`, {
+                const endpoint = targetType === 'post'
+                    ? `/posts/${id}/react`
+                    : `/comments/${id}/react`;
+
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reaction_type: type })
+                    body: JSON.stringify({ reaction_type: reactionType })
                 });
 
                 if (response.ok) {
@@ -1336,7 +1498,23 @@
 
         function updateReactionUI(container, data) {
             const btn = container.querySelector('.reaction-btn');
-            const summary = container.querySelector('.reaction-summary');
+
+            // Robustly find summary element
+            let summary = container.querySelector('.reaction-summary');
+            if (!summary) {
+                // For posts: it's a sibling in the parent flex container
+                if (container.parentElement && container.parentElement.querySelector('.reaction-summary')) {
+                    summary = container.parentElement.querySelector('.reaction-summary');
+                }
+                // For comments: it's inside the comment item (bubble)
+                else {
+                    const commentItem = container.closest('[id^="comment-"]');
+                    if (commentItem) {
+                        summary = commentItem.querySelector('.reaction-summary');
+                    }
+                }
+            }
+
             if (data.userReaction) {
                 const type = data.userReaction;
                 const emojiMap = {
@@ -1349,28 +1527,31 @@
                     care: { icon: '<span class="text-[20px]">🥰</span>', label: 'Care', color: 'text-yellow-500' }
                 };
                 const config = emojiMap[type];
-                btn.innerHTML = `${config.icon}<span class="text-sm font-bold ${config.color}">${config.label}</span>`;
+                btn.innerHTML = `${config.icon}<span class="text-xs font-bold ${config.color}">${config.label}</span>`;
             } else {
-                btn.innerHTML = '<span class="material-symbols-outlined">thumb_up</span><span class="text-sm font-bold">Like</span>';
+                btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">thumb_up</span><span class="text-xs font-bold group-hover:text-primary">Like</span>';
+                btn.className = btn.className.replace('text-primary', 'text-[#60758a] hover:text-primary');
             }
 
-            if (data.reactionCount > 0) {
+            if (data.reactionCount > 0 && summary) {
                 let breakdownHtml = '<div class="flex -space-x-1 mr-1">';
                 const sortedTypes = Object.keys(data.reactionBreakdown).sort((a, b) => data.reactionBreakdown[b] - data.reactionBreakdown[a]).slice(0, 3);
                 sortedTypes.forEach(type => {
                     const emoji = { like: '👍', love: '❤️', haha: '😂', wow: '😮', sad: '😢', angry: '😡', care: '🥰' }[type];
-                    breakdownHtml += `<span class="size-4 flex items-center justify-center bg-white dark:bg-slate-800 rounded-full border border-gray-100 dark:border-slate-700" title="${type}">${emoji}</span>`;
+                    // Smaller size for comments if needed, but reusing same classes
+                    const sizeClass = container.dataset.commentId ? 'size-3 text-[10px]' : 'size-4';
+                    breakdownHtml += `<span class="${sizeClass} flex items-center justify-center bg-white dark:bg-slate-800 rounded-full border border-gray-100 dark:border-slate-700" title="${type}">${emoji}</span>`;
                 });
-                breakdownHtml += `</div><span class="total-count">${data.reactionCount}</span>`;
+                breakdownHtml += `</div><span class="total-count ${container.dataset.commentId ? 'text-[10px]' : ''}">${data.reactionCount}</span>`;
                 summary.innerHTML = breakdownHtml;
-            } else {
+            } else if (summary) {
                 summary.innerHTML = '';
             }
         }
 
         // Initialize everything
         initCommentToggles();
-        setupCommentInputs();
+
     </script>
 </body>
 
