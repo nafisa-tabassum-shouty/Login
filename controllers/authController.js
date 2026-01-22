@@ -24,7 +24,8 @@ exports.register = async (req, res) => {
         });
 
         if (user) {
-            res.redirect('/login');
+            req.session.userId = user._id;
+            res.redirect('/dashboard');
         } else {
             res.status(400).send('Invalid user data');
         }
@@ -55,8 +56,9 @@ exports.login = async (req, res) => {
             return res.status(401).send('Invalid credentials');
         }
 
-        // Login successful (In a real app, you'd set a session or JWT here)
-        res.send('Login Successful! Welcome ' + user.fullName);
+        // Login successful
+        req.session.userId = user._id;
+        res.redirect('/dashboard');
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');

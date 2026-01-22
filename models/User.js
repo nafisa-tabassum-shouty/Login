@@ -23,15 +23,30 @@ const userSchema = new mongoose.Schema({
         minlength: 6,
         select: false
     },
+    username: {
+        type: String,
+        unique: true,
+        sparse: true // Allows null/undefined while maintaining uniqueness for values
+    },
+    profilePicture: {
+        type: String,
+        default: 'default-profile.png'
+    },
+    coverPhoto: {
+        type: String,
+        default: 'default-cover.png'
+    },
+    bio: {
+        type: String,
+        maxlength: [160, 'Bio cannot be more than 160 characters']
+    },
     googleId: {
         type: String
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
     resetPasswordOTP: String,
     resetPasswordOTPExpire: Date
+}, {
+    timestamps: true
 });
 
 // Encrypt password using bcrypt

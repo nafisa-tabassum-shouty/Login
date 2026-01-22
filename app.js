@@ -4,6 +4,8 @@ const path = require('path');
 const connectDB = require('./config/db');
 const viewRouter = require('./routes/viewRoutes');
 const authRouter = require('./routes/authRoutes');
+const postRouter = require('./routes/postRoutes');
+
 const session = require('express-session');
 const passport = require('passport');
 
@@ -29,8 +31,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Body parser middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: false }));
 
 // Set view engine to EJS
 app.set('view engine', 'ejs');
@@ -43,6 +45,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => res.redirect('/login'));
 app.use('/', viewRouter);
 app.use('/', authRouter);
+app.use('/api/posts', postRouter);
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

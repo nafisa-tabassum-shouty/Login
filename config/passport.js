@@ -16,26 +16,28 @@ module.exports = function (passport) {
                     email: profile.emails[0].value
                 };
 
+                console.log('Google Profile:', profile);
+
                 try {
                     let user = await User.findOne({ googleId: profile.id });
 
                     if (user) {
-                        done(null, user);
+                        return done(null, user);
                     } else {
                         // Check if user exists with the same email
                         user = await User.findOne({ email: profile.emails[0].value });
                         if (user) {
                             user.googleId = profile.id;
                             await user.save();
-                            done(null, user);
+                            return done(null, user);
                         } else {
                             user = await User.create(newUser);
-                            done(null, user);
+                            return done(null, user);
                         }
                     }
                 } catch (err) {
-                    console.error(err);
-                    done(err, null);
+                    console.error('Passport Google Strategy Error:', err);
+                    return done(err, null);
                 }
             }
         )

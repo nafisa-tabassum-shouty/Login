@@ -19,7 +19,8 @@ router.get(
     '/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
-        res.send('Login Successful! Welcome ' + req.user.fullName);
+        console.log('Google Auth Success, redirecting to dashboard...');
+        res.redirect('/dashboard');
     }
 );
 

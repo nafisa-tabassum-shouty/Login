@@ -9,5 +9,7 @@ router.get('/reset-password', viewController.getResetPasswordForm);
 router.get('/verify-otp', viewController.getVerifyOTPForm);
 router.get('/privacy-policy', viewController.getPrivacyPolicy);
 router.get('/terms-of-service', viewController.getTermsOfService);
+router.get('/dashboard', viewController.getDashboard);
+
 
 module.exports = router;
