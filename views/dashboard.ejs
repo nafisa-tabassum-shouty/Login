@@ -146,10 +146,119 @@
         .comment-input-area {
             transition: border-color 0.2s;
         }
+
+        #account-sidebar-toggle:checked~#account-sidebar {
+            transform: translateX(0);
+        }
+
+        #account-sidebar-toggle:checked~#sidebar-overlay {
+            display: block;
+        }
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white transition-colors duration-200">
+<body
+    class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white transition-colors duration-200 overflow-x-hidden">
+    <input class="hidden peer" id="account-sidebar-toggle" type="checkbox" />
+    <label class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden transition-opacity duration-300"
+        for="account-sidebar-toggle" id="sidebar-overlay"></label>
+    <aside
+        class="fixed top-0 right-0 h-full w-[360px] bg-white dark:bg-[#1a242f] z-[70] shadow-2xl translate-x-full transition-transform duration-300 ease-in-out flex flex-col overflow-y-auto"
+        id="account-sidebar">
+        <div class="p-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Account</h2>
+                <label class="p-2 rounded-full hover:bg-[#f0f2f5] dark:hover:bg-slate-800 cursor-pointer"
+                    for="account-sidebar-toggle">
+                    <span class="material-symbols-outlined">close</span>
+                </label>
+            </div>
+            <div
+                class="p-2 rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] bg-white dark:bg-[#242f3a] mb-4">
+                <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-700 transition-colors"
+                    href="/profile">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                    </div>
+                    <span class="font-bold text-lg">
+                        <%= user.fullName %>
+                    </span>
+                </a>
+                <div class="border-t border-[#f0f2f5] dark:border-slate-700 mt-2 pt-2">
+                    <a class="block px-2 py-1 text-primary text-sm font-semibold hover:underline" href="/profile">See
+                        all
+                        profiles</a>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <a href="/settings"
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">settings</span>
+                        </div>
+                        <span class="font-medium">Settings & Privacy</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </a>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">help</span>
+                        </div>
+                        <span class="font-medium">Help & Support</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left"
+                    onclick="document.documentElement.classList.toggle('dark')">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">dark_mode</span>
+                        </div>
+                        <span class="font-medium">Display & Accessibility</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">maps_ugc</span>
+                        </div>
+                        <span class="font-medium">Give Feedback</span>
+                    </div>
+                </button>
+                <a href="/logout"
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group mt-2">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">logout</span>
+                        </div>
+                        <span class="font-medium">Log Out</span>
+                    </div>
+                </a>
+            </div>
+            <div class="mt-auto pt-6 text-xs text-[#60758a] px-3">
+                <div class="flex flex-wrap gap-x-2 gap-y-1">
+                    <a class="hover:underline" href="#">Privacy</a> ·
+                    <a class="hover:underline" href="#">Terms</a> ·
+                    <a class="hover:underline" href="#">Advertising</a> ·
+                    <a class="hover:underline" href="#">Ad Choices</a> ·
+                    <a class="hover:underline" href="#">Cookies</a> ·
+                    <span>More</span>
+                </div>
+                <p class="mt-2">SocialApp © 2024</p>
+            </div>
+        </div>
+    </aside>
     <div class="flex flex-col min-h-screen">
         <!-- Top Navbar -->
         <header
@@ -176,15 +285,23 @@
                     </label>
                 </div>
                 <div class="flex items-center gap-4">
+                    <a href="/messages"
+                        class="flex size-10 items-center justify-center rounded-lg bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700">
+                        <span class="material-symbols-outlined">mail</span>
+                    </a>
+                    <a href="/settings"
+                        class="flex size-10 items-center justify-center rounded-lg bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700">
+                        <span class="material-symbols-outlined">settings</span>
+                    </a>
                     <button
                         class="flex size-10 items-center justify-center rounded-lg bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
                         onclick="document.documentElement.classList.toggle('dark')">
                         <span class="material-symbols-outlined">dark_mode</span>
                     </button>
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20"
-                        data-alt="User profile avatar"
-                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
-                    </div>
+                    <label
+                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20 cursor-pointer active:scale-95 transition-transform"
+                        data-alt="User profile avatar" for="account-sidebar-toggle"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'></label>
                 </div>
             </div>
         </header>
@@ -232,7 +349,7 @@
                         <!-- Navigation -->
                         <nav class="flex flex-col gap-2">
                             <a class="flex items-center gap-4 px-4 py-3 rounded-lg active-nav text-primary transition-colors"
-                                href="#">
+                                href="/dashboard">
                                 <span class="material-symbols-outlined fill-current">home</span>
                                 <span class="text-base font-semibold">Home</span>
                             </a>
@@ -247,7 +364,7 @@
                                 <span class="text-base font-medium">Notifications</span>
                             </a>
                             <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
-                                href="#">
+                                href="/messages">
                                 <span class="material-symbols-outlined">mail</span>
                                 <span class="text-base font-medium">Messages</span>
                             </a>
@@ -262,7 +379,7 @@
                                 <span class="text-base font-medium">Profile</span>
                             </a>
                             <a class="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors"
-                                href="#">
+                                href="/settings">
                                 <span class="material-symbols-outlined">settings</span>
                                 <span class="text-base font-medium">Settings</span>
                             </a>

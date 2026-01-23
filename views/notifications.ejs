@@ -8,10 +8,17 @@
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
         rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
         rel="stylesheet" />
-    <script id="tailwind-config">
-        tailwind.config = {
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+
+    <script id="tailwind-config">tailwind.config = {
+
             darkMode: "class",
             theme: {
                 extend: {
@@ -19,50 +26,188 @@
                         "primary": "#258cf4",
                         "background-light": "#f5f7f8",
                         "background-dark": "#101922",
-                    },
+                    }
+
+                    ,
                     fontFamily: {
                         "display": ["Plus Jakarta Sans", "sans-serif"]
                     }
-                },
-            },
+                }
+
+                ,
+            }
+
+            ,
         }
+
     </script>
     <style>
         body {
             font-family: "Plus Jakarta Sans", sans-serif;
         }
+
+        #account-sidebar-toggle:checked~#account-sidebar {
+            transform: translateX(0);
+        }
+
+        #account-sidebar-toggle:checked~#sidebar-overlay {
+            display: block;
+        }
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white transition-colors duration-200">
+<body
+    class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white transition-colors duration-200 overflow-x-hidden">
+    <input class="hidden peer" id="account-sidebar-toggle" type="checkbox" />
+    <label class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden transition-opacity duration-300"
+        for="account-sidebar-toggle" id="sidebar-overlay"></label>
+    <aside
+        class="fixed top-0 right-0 h-full w-[360px] bg-white dark:bg-[#1a242f] z-[70] shadow-2xl translate-x-full transition-transform duration-300 ease-in-out flex flex-col overflow-y-auto"
+        id="account-sidebar">
+        <div class="p-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Account</h2>
+                <label class="p-2 rounded-full hover:bg-[#f0f2f5] dark:hover:bg-slate-800 cursor-pointer"
+                    for="account-sidebar-toggle">
+                    <span class="material-symbols-outlined">close</span>
+                </label>
+            </div>
+            <div
+                class="p-2 rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] bg-white dark:bg-[#242f3a] mb-4">
+                <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-700 transition-colors"
+                    href="/profile">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                    </div>
+                    <span class="font-bold text-lg">
+                        <%= user.fullName %>
+                    </span>
+                </a>
+                <div class="border-t border-[#f0f2f5] dark:border-slate-700 mt-2 pt-2">
+                    <a class="block px-2 py-1 text-primary text-sm font-semibold hover:underline" href="/profile">See
+                        all
+                        profiles</a>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <a href="/settings"
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">settings</span>
+                        </div>
+                        <span class="font-medium">Settings & Privacy</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </a>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">help</span>
+                        </div>
+                        <span class="font-medium">Help & Support</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left"
+                    onclick="document.documentElement.classList.toggle('dark')">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">dark_mode</span>
+                        </div>
+                        <span class="font-medium">Display & Accessibility</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">maps_ugc</span>
+                        </div>
+                        <span class="font-medium">Give Feedback</span>
+                    </div>
+                </button>
+                <a href="/logout"
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group mt-2">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">logout</span>
+                        </div>
+                        <span class="font-medium">Log Out</span>
+                    </div>
+                </a>
+            </div>
+            <div class="mt-auto pt-6 text-xs text-[#60758a] px-3">
+                <div class="flex flex-wrap gap-x-2 gap-y-1">
+                    <a class="hover:underline" href="#">Privacy</a> ·
+                    <a class="hover:underline" href="#">Terms</a> ·
+                    <a class="hover:underline" href="#">Advertising</a> ·
+                    <a class="hover:underline" href="#">Ad Choices</a> ·
+                    <a class="hover:underline" href="#">Cookies</a> ·
+                    <span>More</span>
+                </div>
+                <p class="mt-2">SocialApp © 2024</p>
+            </div>
+        </div>
+    </aside>
     <div class="flex flex-col min-h-screen">
         <!-- Top Navbar -->
         <header
-            class="sticky top-0 z-50 w-full bg-white dark:bg-[#1a242f] border-b border-[#f0f2f5] dark:border-slate-700 px-4 md:px-10 py-3">
-            <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
-                <div class="flex items-center gap-4 text-primary">
-                    <a href="/dashboard" class="flex items-center gap-4">
-                        <div class="size-8">
-                            <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            class="w-full bg-white dark:bg-[#1a242d] border-b border-solid border-[#f0f2f5] dark:border-[#2d3a48] px-4 md:px-10 py-3 sticky top-0 z-50">
+            <div class="max-w-[1200px] mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <a href="/dashboard"
+                        class="flex items-center gap-4 text-[#111418] dark:text-white hover:opacity-80 transition-opacity">
+                        <div class="size-6 text-primary">
+                            <svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                                 <path
-                                    d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
-                                    fill="currentColor"></path>
+                                    d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z">
+                                </path>
                             </svg>
                         </div>
-                        <h2
-                            class="text-[#111418] dark:text-white text-xl font-bold leading-tight tracking-tight hidden sm:block">
-                            SocialApp</h2>
+                        <h2 class="text-lg font-extrabold leading-tight tracking-tight">SocialCircle</h2>
                     </a>
+                    <label class="hidden lg:flex flex-col min-w-40 h-10 max-w-64">
+                        <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                            <div
+                                class="text-[#60758a] flex border-none bg-[#f0f2f5] dark:bg-[#2d3a48] items-center justify-center pl-4 rounded-l-lg">
+                                <span class="material-symbols-outlined text-xl">search</span>
+                            </div>
+                            <input
+                                class="form-input flex w-full min-w-0 flex-1 border-none bg-[#f0f2f5] dark:bg-[#2d3a48] dark:text-white h-full placeholder:text-[#60758a] px-4 rounded-r-lg text-sm font-normal focus:ring-0"
+                                placeholder="Search" value="" />
+                        </div>
+                    </label>
                 </div>
-                <div class="flex items-center gap-4">
-                    <button
-                        class="flex size-10 items-center justify-center rounded-lg bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white"
-                        onclick="document.documentElement.classList.toggle('dark')">
-                        <span class="material-symbols-outlined">dark_mode</span>
-                    </button>
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20"
-                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                <div class="flex flex-1 justify-end gap-6 items-center">
+                    <nav class="hidden md:flex items-center gap-6">
+                        <a class="text-sm font-semibold hover:text-primary transition-colors" href="/dashboard">Home</a>
+                        <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Explore</a>
+                        <a href="/notifications"
+                            class="text-sm font-semibold text-primary transition-colors flex items-center gap-1">
+                            Notifications
+                        </a>
+                        <a class="text-sm font-semibold hover:text-primary transition-colors"
+                            href="/messages">Messages</a>
+                    </nav>
+                    <div class="flex gap-2">
+                        <a href="/settings"
+                            class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                            <span class="material-symbols-outlined">settings</span>
+                        </a>
                     </div>
+                    <label
+                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary cursor-pointer active:scale-95 transition-transform"
+                        data-alt="User profile avatar thumbnail" for="account-sidebar-toggle"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'></label>
                 </div>
             </div>
         </header>

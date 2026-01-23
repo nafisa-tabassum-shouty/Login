@@ -57,10 +57,284 @@
         #notifications-sidebar {
             transition: transform 0.3s ease-in-out;
         }
+
+        /* Facebook Reaction Picker Styles */
+        .reaction-picker {
+            transition: all 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transform-origin: bottom left;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.8) translateY(10px);
+        }
+
+        .reaction-container:hover .reaction-picker,
+        .reaction-container.show-picker .reaction-picker {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+
+        .reaction-emoji {
+            transition: transform 0.2s ease;
+        }
+
+        .reaction-emoji:hover {
+            transform: scale(1.4) translateY(-5px);
+        }
+
+        .reaction-label {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        /* Comment Section Styles */
+        .comments-section {
+            transition: max-height 0.3s ease-out, opacity 0.2s ease-in;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        .comments-section.show {
+            max-height: 2000px;
+            opacity: 1;
+            padding-bottom: 1rem;
+        }
+
+        .comment-item {
+            transition: background-color 0.2s;
+        }
+
+        .comment-item:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .dark .comment-item:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+
+        .reply-nest {
+            border-left: 2px solid #f0f2f5;
+            margin-left: 1.5rem;
+            padding-left: 1rem;
+        }
+
+        .dark .reply-nest {
+            border-left-color: #334155;
+        }
+
+        .comment-bubble {
+            background-color: #f0f2f5;
+            border-radius: 1.25rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .dark .comment-bubble {
+            background-color: #334155;
+        }
+
+        #account-sidebar-toggle:checked~#account-sidebar {
+            transform: translateX(0);
+        }
+
+        #account-sidebar-toggle:checked~#sidebar-overlay {
+            display: block;
+        }
+
+        #edit-details-toggle:checked~#edit-details-modal {
+            display: flex;
+        }
+
+        #edit-details-toggle:checked~#modal-overlay {
+            display: block;
+        }
     </style>
 </head>
 
-<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white min-h-screen">
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white min-h-screen overflow-x-hidden">
+    <input class="hidden peer" id="account-sidebar-toggle" type="checkbox" />
+    <input class="hidden peer" id="edit-details-toggle" type="checkbox" />
+
+    <label class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden transition-opacity duration-300"
+        for="account-sidebar-toggle" id="sidebar-overlay"></label>
+
+    <!-- Modal Overlay for Edit Details -->
+    <label class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] hidden" for="edit-details-toggle"
+        id="modal-overlay"></label>
+
+    <!-- Edit Details Modal -->
+    <div id="edit-details-modal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
+        <div
+            class="relative bg-white dark:bg-[#1a242d] w-full max-w-[600px] rounded-xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-[#f0f2f5] dark:border-[#2d3a48] flex items-center justify-between">
+                <h2 class="text-xl font-bold">Edit Details</h2>
+                <label for="edit-details-toggle"
+                    class="p-2 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] rounded-full transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined">close</span>
+                </label>
+            </div>
+            <form id="editDetailsForm" class="flex flex-col flex-1 overflow-hidden">
+                <div class="p-6 overflow-y-auto space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold block">Bio</label>
+                        <textarea name="bio"
+                            class="w-full rounded-lg border-[#f0f2f5] dark:border-[#2d3a48] bg-white dark:bg-[#101922] focus:border-primary focus:ring-1 focus:ring-primary text-sm min-h-[100px] resize-none"
+                            placeholder="Describe yourself..."><%= user.bio || '' %></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold block">Work</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="workPosition" value="<%= user.workPosition || '' %>"
+                                class="w-full rounded-lg border-[#f0f2f5] dark:border-[#2d3a48] bg-white dark:bg-[#101922] focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                                placeholder="Position (e.g. Senior Designer)" />
+                            <input type="text" name="workCompany" value="<%= user.workCompany || '' %>"
+                                class="w-full rounded-lg border-[#f0f2f5] dark:border-[#2d3a48] bg-white dark:bg-[#101922] focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                                placeholder="Company (e.g. Studio Alpha)" />
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-sm font-bold block">Education</label>
+                        <input type="text" name="education" value="<%= user.education || '' %>"
+                            class="w-full rounded-lg border-[#f0f2f5] dark:border-[#2d3a48] bg-white dark:bg-[#101922] focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                            placeholder="School or University" />
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold block">Current City</label>
+                            <input type="text" name="currentCity" value="<%= user.currentCity || '' %>"
+                                class="w-full rounded-lg border-[#f0f2f5] dark:border-[#2d3a48] bg-white dark:bg-[#101922] focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                                placeholder="e.g. San Francisco, CA" />
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-sm font-bold block">Hometown</label>
+                            <input type="text" name="hometown" value="<%= user.hometown || '' %>"
+                                class="w-full rounded-lg border-[#f0f2f5] dark:border-[#2d3a48] bg-white dark:bg-[#101922] focus:border-primary focus:ring-1 focus:ring-primary text-sm"
+                                placeholder="e.g. Austin, TX" />
+                        </div>
+                    </div>
+                </div>
+                <div
+                    class="px-6 py-4 border-t border-[#f0f2f5] dark:border-[#2d3a48] flex justify-end gap-3 bg-gray-50 dark:bg-[#1a242d]">
+                    <label for="edit-details-toggle"
+                        class="px-6 py-2 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer">
+                        Cancel
+                    </label>
+                    <button type="submit"
+                        class="px-8 py-2 bg-primary text-white font-bold rounded-lg hover:bg-blue-600 transition-colors">
+                        Save
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <aside
+        class="fixed top-0 right-0 h-full w-[360px] bg-white dark:bg-[#1a242f] z-[70] shadow-2xl translate-x-full transition-transform duration-300 ease-in-out flex flex-col overflow-y-auto"
+        id="account-sidebar">
+        <div class="p-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Account</h2>
+                <label class="p-2 rounded-full hover:bg-[#f0f2f5] dark:hover:bg-slate-800 cursor-pointer"
+                    for="account-sidebar-toggle">
+                    <span class="material-symbols-outlined">close</span>
+                </label>
+            </div>
+            <div
+                class="p-2 rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] bg-white dark:bg-[#242f3a] mb-4">
+                <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-700 transition-colors"
+                    href="/profile">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                    </div>
+                    <span class="font-bold text-lg">
+                        <%= user.fullName %>
+                    </span>
+                </a>
+                <div class="border-t border-[#f0f2f5] dark:border-slate-700 mt-2 pt-2">
+                    <a class="block px-2 py-1 text-primary text-sm font-semibold hover:underline" href="/profile">See
+                        all
+                        profiles</a>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <a href="/settings"
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">settings</span>
+                        </div>
+                        <span class="font-medium">Settings & Privacy</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </a>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">help</span>
+                        </div>
+                        <span class="font-medium">Help & Support</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left"
+                    onclick="document.documentElement.classList.toggle('dark')">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">dark_mode</span>
+                        </div>
+                        <span class="font-medium">Display & Accessibility</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">maps_ugc</span>
+                        </div>
+                        <span class="font-medium">Give Feedback</span>
+                    </div>
+                </button>
+                <a href="/logout"
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group mt-2">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">logout</span>
+                        </div>
+                        <span class="font-medium">Log Out</span>
+                    </div>
+                </a>
+            </div>
+            <div class="mt-auto pt-6 text-xs text-[#60758a] px-3">
+                <div class="flex flex-wrap gap-x-2 gap-y-1">
+                    <a class="hover:underline" href="#">Privacy</a> ·
+                    <a class="hover:underline" href="#">Terms</a> ·
+                    <a class="hover:underline" href="#">Advertising</a> ·
+                    <a class="hover:underline" href="#">Ad Choices</a> ·
+                    <a class="hover:underline" href="#">Cookies</a> ·
+                    <span>More</span>
+                </div>
+                <p class="mt-2">SocialApp © 2024</p>
+            </div>
+        </div>
+    </aside>
     <div class="layout-container flex flex-col items-center">
         <!-- Top Navigation Bar -->
         <header
@@ -98,19 +372,21 @@
                         <button id="noti-btn"
                             class="text-sm font-semibold hover:text-primary transition-colors flex items-center gap-1">
                             Notifications
-                            <span class="size-2 bg-red-500 rounded-full"></span>
+                            <span id="header-noti-badge" class="size-2 bg-red-500 rounded-full hidden"></span>
                         </button>
+                        <a class="text-sm font-semibold hover:text-primary transition-colors"
+                            href="/messages">Messages</a>
                     </nav>
                     <div class="flex gap-2">
-                        <button
-                            class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white">
+                        <a href="/settings"
+                            class="flex items-center justify-center rounded-lg h-10 w-10 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
                             <span class="material-symbols-outlined">settings</span>
-                        </button>
+                        </a>
                     </div>
-                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary"
-                        data-alt="User profile avatar thumbnail"
-                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
-                    </div>
+                    <label
+                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary cursor-pointer active:scale-95 transition-transform"
+                        data-alt="User profile avatar thumbnail" for="account-sidebar-toggle"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'></label>
                 </div>
             </div>
         </header>
@@ -120,17 +396,81 @@
             <div
                 class="bg-white dark:bg-[#1a242d] rounded-xl overflow-hidden shadow-sm border border-[#f0f2f5] dark:border-[#2d3a48]">
                 <!-- Cover Image -->
-                <div class="relative h-48 md:h-80 w-full bg-cover bg-center"
+                <div id="coverPhotoDisplay" class="relative h-48 md:h-80 w-full bg-cover bg-center group"
                     data-alt="Wide landscape cinematic cover photo"
-                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAFaFHmuRiqwCazvTWYA-RspagsXfEi3DbF9FKZq88RhA-hQmriMzqrq3lJ2tcGRDF3UARTNoJo4EvAm9npzmcV5OOz5r1ks2Mz9J4YHHfgWCLdsx5er8jzOlqVysT-t8vDd2Okrd0hiy4f89N3ox4Byt_YLddcS6TMCO137ApRnOVUOYaE-rKxSP7eeWIbDAuVWMyXUgZlc0BUPxWqB0TV4WL48PLf52YbNLQaz7NAXyn6RhMvvvt1dF4_MPh_SrURAeJoceoNGZA");'>
+                    style='background-image: url("/uploads/<%= user.cover_photo || "default-cover.png" %>");'>
+
+                    <!-- Cover Upload Overlay -->
+                    <div class="absolute bottom-4 right-4 z-10">
+                        <button onclick="document.getElementById('coverPhotoInput').click()"
+                            class="flex items-center gap-2 bg-black/60 hover:bg-black/80 text-white px-4 py-2 rounded-lg backdrop-blur-[2px] transition-all text-sm font-bold border border-white/20">
+                            <span class="material-symbols-outlined text-[20px]">photo_camera</span>
+                            <span class="hidden md:block">Edit Cover Photo</span>
+                        </button>
+                    </div>
+
+                    <!-- Action Buttons (Save/Cancel) -->
+                    <div id="coverActionBtns"
+                        class="absolute inset-0 bg-white/10 hidden flex items-center justify-center gap-4 z-20 backdrop-blur-sm">
+                        <div
+                            class="flex flex-col items-center gap-4 bg-black/60 p-6 rounded-2xl backdrop-blur-md border border-white/10 shadow-2xl">
+                            <p class="text-white font-bold text-lg">Update cover photo?</p>
+                            <div class="flex gap-3">
+                                <button id="saveCoverPhoto"
+                                    class="px-6 py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-600 transition-all shadow-lg">Save
+                                    Changes</button>
+                                <button id="cancelCoverPhoto"
+                                    class="px-6 py-2 bg-white/20 text-white rounded-lg font-bold hover:bg-white/30 transition-all border border-white/30">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <div id="coverPhotoLoader"
+                        class="absolute inset-0 flex items-center justify-center hidden bg-black/40 z-30">
+                        <div class="size-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+                    </div>
                 </div>
+                <!-- Hidden File Input -->
+                <input type="file" id="coverPhotoInput" class="hidden" accept="image/*">
                 <!-- Profile Identity -->
                 <div class="px-6 pb-6 relative">
                     <div class="flex flex-col md:flex-row items-end md:items-center gap-4 -mt-16 md:-mt-20">
-                        <div
-                            class="size-32 md:size-40 rounded-full border-4 border-white dark:border-[#1a242d] overflow-hidden bg-white shadow-lg">
-                            <div class="w-full h-full bg-cover bg-center" data-alt="Large circular user profile picture"
-                                style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                        <div class="relative group">
+                            <div
+                                class="size-32 md:size-40 rounded-full border-4 border-white dark:border-[#1a242d] overflow-hidden bg-white shadow-lg relative">
+                                <div id="profilePicDisplay" class="w-full h-full bg-cover bg-center"
+                                    data-alt="Large circular user profile picture"
+                                    style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                                </div>
+                                <!-- Upload Overlay -->
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white"
+                                    onclick="document.getElementById('profilePicInput').click()">
+                                    <span class="material-symbols-outlined text-3xl">photo_camera</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider mt-1">Change</span>
+                                </div>
+                            </div>
+                            <!-- Hidden File Input -->
+                            <input type="file" id="profilePicInput" class="hidden" accept="image/*">
+
+                            <!-- Save/Cancel Buttons (Hidden by default) -->
+                            <div id="profileActionBtns"
+                                class="absolute -bottom-2 left-1/2 -translate-x-1/2 hidden flex gap-2 z-10">
+                                <button id="saveProfilePic"
+                                    class="size-8 bg-primary text-white rounded-full shadow-lg hover:bg-blue-600 flex items-center justify-center transition-all">
+                                    <span class="material-symbols-outlined text-sm">check</span>
+                                </button>
+                                <button id="cancelProfilePic"
+                                    class="size-8 bg-white dark:bg-slate-800 text-red-500 rounded-full shadow-lg hover:bg-gray-100 dark:hover:bg-slate-700 flex items-center justify-center transition-all">
+                                    <span class="material-symbols-outlined text-sm">close</span>
+                                </button>
+                            </div>
+
+                            <!-- Loading Spinner -->
+                            <div id="profilePicLoader"
+                                class="absolute inset-0 flex items-center justify-center hidden bg-black/20 rounded-full">
+                                <div class="size-8 border-4 border-white/20 border-t-white rounded-full animate-spin">
+                                </div>
                             </div>
                         </div>
                         <div class="flex-1 pt-2 md:pt-16">
@@ -145,10 +485,10 @@
                                     </p>
                                 </div>
                                 <div class="flex gap-3 mt-4 md:mt-0">
-                                    <a href="/profile/edit"
-                                        class="flex-1 md:flex-none px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-blue-600 transition-colors text-center">
+                                    <label for="edit-details-toggle"
+                                        class="flex-1 md:flex-none px-6 py-2 bg-primary text-white font-bold rounded-lg hover:bg-blue-600 transition-colors text-center cursor-pointer">
                                         Edit Profile
-                                    </a>
+                                    </label>
                                     <button
                                         class="flex-1 md:flex-none px-6 py-2 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white font-bold rounded-lg">
                                         Add Story
@@ -182,34 +522,86 @@
                         class="bg-white dark:bg-[#1a242d] p-6 rounded-xl shadow-sm border border-[#f0f2f5] dark:border-[#2d3a48]">
                         <h3 class="text-xl font-bold mb-4">Intro</h3>
                         <p class="text-sm leading-relaxed text-[#111418] dark:text-gray-300 mb-6">
-                            Product Designer &amp; Photography Enthusiast based in San Francisco. I build digital
-                            experiences and capture moments in between. 🎨📸
+                            <%= user.bio || 'Describe yourself...' %>
                         </p>
                         <div class="space-y-4">
-                            <div class="flex items-center gap-3 text-sm text-[#60758a] dark:text-gray-400">
-                                <span class="material-symbols-outlined">work</span>
-                                <span>Senior Designer at <strong class="text-[#111418] dark:text-white">Studio
-                                        Alpha</strong></span>
-                            </div>
-                            <div class="flex items-center gap-3 text-sm text-[#60758a] dark:text-gray-400">
-                                <span class="material-symbols-outlined">school</span>
-                                <span>Studied at <strong class="text-[#111418] dark:text-white">Rhode Island School of
-                                        Design</strong></span>
-                            </div>
-                            <div class="flex items-center gap-3 text-sm text-[#60758a] dark:text-gray-400">
-                                <span class="material-symbols-outlined">home</span>
-                                <span>Lives in <strong class="text-[#111418] dark:text-white">San Francisco,
-                                        CA</strong></span>
-                            </div>
-                            <div class="flex items-center gap-3 text-sm text-[#60758a] dark:text-gray-400">
-                                <span class="material-symbols-outlined">calendar_month</span>
-                                <span>Joined <strong class="text-[#111418] dark:text-white">March 2018</strong></span>
-                            </div>
+                            <% if (user.workPosition || user.workCompany) { %>
+                                <div
+                                    class="flex items-center gap-4 text-sm text-[#60758a] dark:text-gray-400 group/intro transition-colors hover:text-[#111418] dark:hover:text-white">
+                                    <div
+                                        class="size-8 rounded-full bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-center group-hover/intro:bg-primary/10 transition-colors shrink-0">
+                                        <span
+                                            class="material-symbols-outlined text-xl group-hover/intro:text-primary transition-colors">work</span>
+                                    </div>
+                                    <span class="flex-1">
+                                        <%= user.workPosition || 'Worker' %> at <strong
+                                                class="text-[#111418] dark:text-white">
+                                                <%= user.workCompany || 'Personal Studio' %>
+                                            </strong>
+                                    </span>
+                                </div>
+                                <% } %>
+                                    <% if (user.education) { %>
+                                        <div
+                                            class="flex items-center gap-4 text-sm text-[#60758a] dark:text-gray-400 group/intro transition-colors hover:text-[#111418] dark:hover:text-white">
+                                            <div
+                                                class="size-8 rounded-full bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-center group-hover/intro:bg-primary/10 transition-colors shrink-0">
+                                                <span
+                                                    class="material-symbols-outlined text-xl group-hover/intro:text-primary transition-colors">school</span>
+                                            </div>
+                                            <span class="flex-1">Studied at <strong
+                                                    class="text-[#111418] dark:text-white">
+                                                    <%= user.education %>
+                                                </strong></span>
+                                        </div>
+                                        <% } %>
+                                            <% if (user.currentCity) { %>
+                                                <div
+                                                    class="flex items-center gap-4 text-sm text-[#60758a] dark:text-gray-400 group/intro transition-colors hover:text-[#111418] dark:hover:text-white">
+                                                    <div
+                                                        class="size-8 rounded-full bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-center group-hover/intro:bg-primary/10 transition-colors shrink-0">
+                                                        <span
+                                                            class="material-symbols-outlined text-xl group-hover/intro:text-primary transition-colors">home</span>
+                                                    </div>
+                                                    <span class="flex-1">Lives in <strong
+                                                            class="text-[#111418] dark:text-white">
+                                                            <%= user.currentCity %>
+                                                        </strong></span>
+                                                </div>
+                                                <% } %>
+                                                    <% if (user.hometown) { %>
+                                                        <div
+                                                            class="flex items-center gap-4 text-sm text-[#60758a] dark:text-gray-400 group/intro transition-colors hover:text-[#111418] dark:hover:text-white">
+                                                            <div
+                                                                class="size-8 rounded-full bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-center group-hover/intro:bg-primary/10 transition-colors shrink-0">
+                                                                <span
+                                                                    class="material-symbols-outlined text-xl group-hover/intro:text-primary transition-colors">location_on</span>
+                                                            </div>
+                                                            <span class="flex-1">From <strong
+                                                                    class="text-[#111418] dark:text-white">
+                                                                    <%= user.hometown %>
+                                                                </strong></span>
+                                                        </div>
+                                                        <% } %>
+                                                            <div
+                                                                class="flex items-center gap-4 text-sm text-[#60758a] dark:text-gray-400 group/intro transition-colors hover:text-[#111418] dark:hover:text-white">
+                                                                <div
+                                                                    class="size-8 rounded-full bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-center group-hover/intro:bg-primary/10 transition-colors shrink-0">
+                                                                    <span
+                                                                        class="material-symbols-outlined text-xl group-hover/intro:text-primary transition-colors">calendar_month</span>
+                                                                </div>
+                                                                <span class="flex-1">Joined <strong
+                                                                        class="text-[#111418] dark:text-white">
+                                                                        <%= new Date(user.createdAt || user.created_at
+                                                                            || Date.now()).toLocaleDateString('en-US', {
+                                                                            month: 'long' , year: 'numeric' }) %>
+                                                                    </strong></span>
+                                                            </div>
                         </div>
-                        <button
-                            class="w-full mt-6 py-2 bg-[#f0f2f5] dark:bg-[#2d3a48] font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        <label for="edit-details-toggle"
+                            class="w-full mt-6 block py-2 bg-[#f0f2f5] dark:bg-[#2d3a48] font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors text-center cursor-pointer">
                             Edit Details
-                        </button>
+                        </label>
                     </section>
                     <!-- Photos Grid Preview -->
                     <section
@@ -245,35 +637,139 @@
                 <!-- Right Column: Posts Feed -->
                 <div class="lg:col-span-8 space-y-6">
                     <!-- Create Post Placeholder -->
+                    <!-- Post Composer (Synchronized with Dashboard) -->
                     <div
                         class="bg-white dark:bg-[#1a242d] p-6 rounded-xl shadow-sm border border-[#f0f2f5] dark:border-[#2d3a48]">
-                        <div class="flex gap-4">
-                            <div class="size-10 rounded-full bg-cover bg-center" data-alt="User small avatar"
-                                style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                        <form action="/posts" method="POST" enctype="multipart/form-data">
+                            <div class="flex gap-4">
+                                <div class="size-12 rounded-full bg-cover bg-center shrink-0"
+                                    data-alt="Your profile avatar"
+                                    style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                                </div>
+                                <div class="flex-1">
+                                    <textarea name="content_text"
+                                        class="w-full min-h-[100px] bg-transparent border-none focus:ring-0 text-lg resize-none placeholder:text-[#bac4cf] dark:text-white"
+                                        placeholder="What's on your mind, <%= user.fullName.split(' ')[0] %>?"></textarea>
+
+                                    <!-- Image/GIF Preview Area -->
+                                    <div id="mediaPreview" class="hidden mb-4 relative">
+                                        <img src="" alt="Preview"
+                                            class="max-h-60 rounded-xl border border-[#f0f2f5] dark:border-[#2d3a48]">
+                                        <button type="button" id="removeMedia"
+                                            class="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-black/70">
+                                            <span class="material-symbols-outlined text-sm">close</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- Poll Creation Area -->
+                                    <div id="pollCreator"
+                                        class="hidden mb-4 p-4 border border-[#f0f2f5] dark:border-[#2d3a48] rounded-xl bg-gray-50 dark:bg-slate-800/50">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h4 class="font-bold text-sm dark:text-white">Create Poll</h4>
+                                            <button type="button" id="removePoll"
+                                                class="text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 p-1 rounded-full transition-colors">
+                                                <span class="material-symbols-outlined text-sm">close</span>
+                                            </button>
+                                        </div>
+                                        <div id="pollOptionsContainer" class="flex flex-col gap-2">
+                                            <input type="text" name="poll_options[]" placeholder="Option 1"
+                                                class="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-[#f0f2f5] dark:border-[#2d3a48] rounded-lg text-sm dark:text-white focus:ring-1 focus:ring-primary outline-none">
+                                            <input type="text" name="poll_options[]" placeholder="Option 2"
+                                                class="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-[#f0f2f5] dark:border-[#2d3a48] rounded-lg text-sm dark:text-white focus:ring-1 focus:ring-primary outline-none">
+                                        </div>
+                                        <button type="button" id="addPollOption"
+                                            class="mt-3 text-primary text-sm font-bold flex items-center gap-1 hover:underline">
+                                            <span class="material-symbols-outlined text-sm">add</span> Add an option
+                                        </button>
+                                        <div class="mt-4 pt-4 border-t border-[#f0f2f5] dark:border-[#2d3a48]">
+                                            <label class="block text-xs font-bold text-[#60758a] uppercase mb-2">Poll
+                                                Length</label>
+                                            <select name="poll_duration"
+                                                class="w-full bg-white dark:bg-slate-900 border border-[#f0f2f5] dark:border-[#2d3a48] rounded-lg px-3 py-2 text-sm dark:text-white outline-none">
+                                                <option value="1">1 Day</option>
+                                                <option value="3">3 Days</option>
+                                                <option value="7">7 Days</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Schedule Panel -->
+                                    <div id="schedulePanel"
+                                        class="hidden mb-4 p-4 border border-[#f0f2f5] dark:border-[#2d3a48] rounded-xl bg-gray-50 dark:bg-slate-800/50">
+                                        <div class="flex justify-between items-center mb-3">
+                                            <h4 class="font-bold text-sm dark:text-white">Schedule Post</h4>
+                                            <button type="button" id="removeSchedule"
+                                                class="text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 p-1 rounded-full transition-colors">
+                                                <span class="material-symbols-outlined text-sm">close</span>
+                                            </button>
+                                        </div>
+                                        <div class="flex flex-col gap-3">
+                                            <div class="flex-1">
+                                                <label
+                                                    class="block text-xs font-bold text-[#60758a] uppercase mb-2">Publish
+                                                    Date & Time</label>
+                                                <input type="datetime-local" name="scheduled_at" id="scheduledAt"
+                                                    class="w-full px-4 py-2 bg-white dark:bg-slate-900 border border-[#f0f2f5] dark:border-[#2d3a48] rounded-lg text-sm dark:text-white focus:ring-1 focus:ring-primary outline-none">
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <label
+                                                    class="flex items-center gap-2 text-sm dark:text-gray-300 cursor-pointer">
+                                                    <input type="checkbox" id="scheduleToggle" name="is_scheduled"
+                                                        value="true"
+                                                        class="w-4 h-4 rounded text-primary border-gray-300 focus:ring-primary">
+                                                    Schedule this post
+                                                </label>
+                                                <button type="button" id="clearSchedule"
+                                                    class="text-sm text-primary font-semibold hover:underline">
+                                                    Clear
+                                                </button>
+                                            </div>
+                                            <p class="text-[11px] text-[#60758a]">Post will be hidden until the selected
+                                                time.</p>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="flex items-center justify-between pt-3 border-t border-[#f0f2f5] dark:border-[#2d3a48]">
+                                        <div class="flex gap-1 text-primary">
+                                            <input type="file" name="content_image" id="imageInput" class="hidden"
+                                                accept="image/*">
+                                            <input type="hidden" name="content_gif" id="gifInput">
+
+                                            <button type="button"
+                                                onclick="document.getElementById('imageInput').click()"
+                                                class="p-2 rounded-full hover:bg-primary/10 transition-colors">
+                                                <span class="material-symbols-outlined">image</span>
+                                            </button>
+                                            <button type="button" id="gifPickerBtn"
+                                                class="p-2 rounded-full hover:bg-primary/10 transition-colors">
+                                                <span class="material-symbols-outlined">gif_box</span>
+                                            </button>
+                                            <button type="button" id="pollBtn"
+                                                class="p-2 rounded-full hover:bg-primary/10 transition-colors">
+                                                <span class="material-symbols-outlined">ballot</span>
+                                            </button>
+                                            <div class="relative">
+                                                <button type="button" id="emojiPickerBtn"
+                                                    class="p-2 rounded-full hover:bg-primary/10 transition-colors">
+                                                    <span class="material-symbols-outlined">mood</span>
+                                                </button>
+                                                <!-- Emoji Picker Container -->
+                                                <div id="emojiPickerContainer"
+                                                    class="absolute top-full left-0 mt-2 z-[110] hidden shadow-2xl rounded-2xl overflow-hidden bg-white dark:bg-[#1a242f]">
+                                                </div>
+                                            </div>
+                                            <button type="button" id="scheduleBtn"
+                                                class="p-2 rounded-full hover:bg-primary/10 transition-colors">
+                                                <span class="material-symbols-outlined">calendar_month</span>
+                                            </button>
+                                        </div>
+                                        <button type="submit"
+                                            class="bg-primary text-white px-6 py-2 rounded-full font-bold text-sm hover:bg-primary/90 transition-all disabled:opacity-50">Post</button>
+                                    </div>
+                                </div>
                             </div>
-                            <button
-                                class="flex-1 bg-[#f0f2f5] dark:bg-[#2d3a48] rounded-full text-left px-5 text-[#60758a] dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                                What's on your mind, <%= user.fullName.split(' ')[0] %>?
-                            </button>
-                        </div>
-                        <div
-                            class="border-t border-[#f0f2f5] dark:border-[#2d3a48] mt-4 pt-4 flex justify-between px-2">
-                            <button
-                                class="flex items-center gap-2 font-semibold text-[#60758a] dark:text-gray-400 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] p-2 rounded-lg transition-colors">
-                                <span class="material-symbols-outlined text-red-500">videocam</span>
-                                Live Video
-                            </button>
-                            <button
-                                class="flex items-center gap-2 font-semibold text-[#60758a] dark:text-gray-400 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] p-2 rounded-lg transition-colors">
-                                <span class="material-symbols-outlined text-green-500">photo_library</span>
-                                Photo/Video
-                            </button>
-                            <button
-                                class="flex items-center gap-2 font-semibold text-[#60758a] dark:text-gray-400 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] p-2 rounded-lg transition-colors">
-                                <span class="material-symbols-outlined text-yellow-500">sentiment_satisfied</span>
-                                Activity
-                            </button>
-                        </div>
+                        </form>
                     </div>
                     <!-- Post Feed Sort -->
                     <div class="flex justify-between items-center px-2">
@@ -284,168 +780,1339 @@
                             Filters
                         </button>
                     </div>
-                    <% if (posts && posts.length > 0) { %>
-                        <% posts.forEach(post => { %>
-                            <div class="bg-white dark:bg-[#1a242d] rounded-xl shadow-sm border border-[#f0f2f5] dark:border-[#2d3a48] mb-6">
-                                <div class="p-4 flex justify-between items-center">
-                                    <div class="flex gap-3">
-                                        <div class="size-10 rounded-full bg-cover bg-center" data-alt="User avatar"
-                                            style=' background-image: url("/uploads/<%=post.user_id.profile_picture
-                                    || "default-profile.png" %>");'>
-                        </div>
-                        <div>
-                            <p class="font-bold">
-                                <%= post.user_id.fullName %>
-                            </p>
-                            <p class="text-xs text-[#60758a] dark:text-gray-400">
-                                <%= new Date(post.created_at).toLocaleDateString() %> • <span
-                                        class="material-symbols-outlined text-[10px] align-middle">public</span>
-                            </p>
-                        </div>
-                    </div>
-                    <button class="p-2 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] rounded-full">
-                        <span class="material-symbols-outlined">more_horiz</span>
-                    </button>
-                </div>
-                <div class="px-4 pb-3">
-                    <p class="text-sm">
-                        <%= post.content_text %>
-                    </p>
-                </div>
-                <% if (post.content_image) { %>
-                    <div class="h-[400px] w-full bg-cover bg-center"
-                        style='background-image: url("/uploads/<%= post.content_image %>");'>
-                    </div>
-                    <% } %>
-                        <% if (post.content_gif) { %>
-                            <div class="w-full">
-                                <img src="<%= post.content_gif %>" alt="GIF" class="w-full">
-                            </div>
-                            <% } %>
-                                <div class="p-3">
-                                    <div
-                                        class="flex justify-between text-sm text-[#60758a] dark:text-gray-400 mb-3 px-1">
-                                        <div class="flex items-center gap-1">
-                                            <span
-                                                class="flex items-center justify-center size-5 bg-primary rounded-full text-white text-[10px]"><span
-                                                    class="material-symbols-outlined text-[12px] fill-1">thumb_up</span></span>
-                                            <span>
-                                                <%= post.reactionCount %>
-                                            </span>
+                    <div class="flex flex-col gap-4">
+                        <% if (posts && posts.length> 0) { %>
+                            <% posts.forEach(post=> { %>
+                                <article
+                                    class="bg-white dark:bg-[#1a242f] rounded-xl border border-[#f0f2f5] dark:border-slate-700 overflow-hidden shadow-sm">
+                                    <div class="p-4">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex gap-3">
+                                                <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                                                    data-alt="<%= post.user_id ? post.user_id.fullName : 'Unknown User' %> profile"
+                                                    style='background-image: url("/uploads/<%= (post.user_id && post.user_id.profile_picture) ? post.user_id.profile_picture : "default-profile.png" %>");'>
+                                                </div>
+                                                <div>
+                                                    <div class="flex items-center gap-1">
+                                                        <h4 class="font-bold text-[#111418] dark:text-white">
+                                                            <%= post.user_id ? post.user_id.fullName : 'Deleted User' %>
+                                                        </h4>
+                                                        <% if (post.user_id && post.user_id.verified) { %>
+                                                            <span
+                                                                class="material-symbols-outlined text-primary text-[18px] fill-current">verified</span>
+                                                            <% } %>
+                                                    </div>
+                                                    <p class="text-sm text-[#60758a]">@<%= (post.user_id &&
+                                                            post.user_id.username) ? post.user_id.username : 'user' %> •
+                                                            <%= new Date(post.created_at).toLocaleDateString() %>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                class="text-[#60758a] hover:bg-[#f0f2f5] dark:hover:bg-slate-800 p-1 rounded-full">
+                                                <span class="material-symbols-outlined">more_horiz</span>
+                                            </button>
                                         </div>
-                                        <span>
-                                            <%= post.commentCount || 0 %> comments
-                                        </span>
+                                        <div class="mt-3">
+                                            <p class="text-[#111418] dark:text-slate-200 leading-relaxed mb-4">
+                                                <%= post.content_text %>
+                                            </p>
+
+                                            <% if (post.content_image) { %>
+                                                <div class="w-full bg-center bg-no-repeat aspect-video bg-cover rounded-xl mb-4 border border-[#f0f2f5] dark:border-slate-700"
+                                                    style='background-image: url("/uploads/<%= post.content_image %>");'>
+                                                </div>
+                                                <% } %>
+
+                                                    <% if (post.content_gif) { %>
+                                                        <div class="w-full mb-4">
+                                                            <img src="<%= post.content_gif %>" alt="GIF content"
+                                                                class="w-full rounded-xl border border-[#f0f2f5] dark:border-slate-700">
+                                                        </div>
+                                                        <% } %>
+
+                                                            <% if (post.poll && post.poll.options &&
+                                                                post.poll.options.length> 0) {
+                                                                %>
+                                                                <div class="poll-container mb-4 flex flex-col gap-2"
+                                                                    data-post-id="<%= post._id %>">
+                                                                    <% const totalVotes=post.poll.options.reduce((acc,
+                                                                        opt)=> acc +
+                                                                        (opt.votes ? opt.votes.length : 0),
+                                                                        0);
+                                                                        const hasVoted = post.poll.options.some(opt =>
+                                                                        opt.votes && opt.votes.some(v => v.toString()
+                                                                        === user._id.toString()));
+                                                                        const isExpired = post.poll.expires_at && new
+                                                                        Date(post.poll.expires_at) < new Date(); %>
+                                                                            <% post.poll.options.forEach((option, idx)=>
+                                                                                { %>
+                                                                                <% const voteCount=option.votes ?
+                                                                                    option.votes.length : 0; %>
+                                                                                    <% const percentage=totalVotes> 0 ?
+                                                                                        Math.round((voteCount /
+                                                                                        totalVotes) * 100) : 0; %>
+                                                                                        <button type="button"
+                                                                                            class="poll-option-btn relative w-full p-3 rounded-lg border border-[#f0f2f5] dark:border-slate-700 text-left overflow-hidden transition-all <%= hasVoted || isExpired ? 'cursor-default' : 'hover:bg-primary/5' %>"
+                                                                                            data-option-id="<%= option._id %>"
+                                                                                            <%=hasVoted || isExpired
+                                                                                            ? 'disabled' : '' %>>
+                                                                                            <div
+                                                                                                class="relative z-10 flex justify-between items-center w-full">
+                                                                                                <span
+                                                                                                    class="font-medium text-sm dark:text-white">
+                                                                                                    <%= option.text %>
+                                                                                                </span>
+                                                                                                <% if (hasVoted ||
+                                                                                                    isExpired) { %>
+                                                                                                    <span
+                                                                                                        class="text-xs font-bold text-[#60758a]">
+                                                                                                        <%= percentage
+                                                                                                            %>%
+                                                                                                    </span>
+                                                                                                    <% } %>
+                                                                                            </div>
+                                                                                            <% if (hasVoted ||
+                                                                                                isExpired) { %>
+                                                                                                <div class="absolute inset-0 bg-primary/10 transition-all duration-500"
+                                                                                                    style="width: <%= percentage %>%">
+                                                                                                </div>
+                                                                                                <% } %>
+                                                                                        </button>
+                                                                                        <% }) %>
+                                                                                            <div
+                                                                                                class="flex justify-between items-center mt-1">
+                                                                                                <p
+                                                                                                    class="text-xs text-[#60758a]">
+                                                                                                    <%= totalVotes %>
+                                                                                                        votes • <%=
+                                                                                                            isExpired
+                                                                                                            ? 'Final results'
+                                                                                                            : 'Active'
+                                                                                                            %>
+                                                                                                </p>
+                                                                                            </div>
+                                                                </div>
+                                                                <% } %>
+
+                                                                    <!-- Interaction Bar -->
+                                                                    <div
+                                                                        class="flex items-center justify-between pt-2 border-t border-[#f0f2f5] dark:border-slate-700">
+                                                                        <div class="flex gap-4">
+                                                                            <!-- Reaction Button & Picker -->
+                                                                            <div class="relative reaction-container"
+                                                                                data-post-id="<%= post._id %>">
+                                                                                <button
+                                                                                    class="reaction-btn group flex items-center gap-2 text-[#60758a] hover:bg-[#f0f2f5] dark:hover:bg-slate-800 p-2 rounded-lg transition-colors <%= post.userReaction ? 'text-primary' : '' %>">
+                                                                                    <% if (post.userReaction==='like' )
+                                                                                        { %>
+                                                                                        <span
+                                                                                            class="material-symbols-outlined fill-current text-primary">thumb_up</span>
+                                                                                        <span
+                                                                                            class="text-sm font-bold text-primary">Like</span>
+                                                                                        <% } else if
+                                                                                            (post.userReaction==='love'
+                                                                                            ) { %>
+                                                                                            <span
+                                                                                                class="text-[20px]">❤️</span>
+                                                                                            <span
+                                                                                                class="text-sm font-bold text-red-500">Love</span>
+                                                                                            <% } else if
+                                                                                                (post.userReaction==='haha'
+                                                                                                ) { %>
+                                                                                                <span
+                                                                                                    class="text-[20px]">😂</span>
+                                                                                                <span
+                                                                                                    class="text-sm font-bold text-yellow-500">Haha</span>
+                                                                                                <% } else if
+                                                                                                    (post.userReaction==='wow'
+                                                                                                    ) { %>
+                                                                                                    <span
+                                                                                                        class="text-[20px]">😮</span>
+                                                                                                    <span
+                                                                                                        class="text-sm font-bold text-yellow-500">Wow</span>
+                                                                                                    <% } else if
+                                                                                                        (post.userReaction==='sad'
+                                                                                                        ) { %>
+                                                                                                        <span
+                                                                                                            class="text-[20px]">😢</span>
+                                                                                                        <span
+                                                                                                            class="text-sm font-bold text-yellow-500">Sad</span>
+                                                                                                        <% } else if
+                                                                                                            (post.userReaction==='angry'
+                                                                                                            ) { %>
+                                                                                                            <span
+                                                                                                                class="text-[20px]">😡</span>
+                                                                                                            <span
+                                                                                                                class="text-sm font-bold text-orange-600">Angry</span>
+                                                                                                            <% } else if
+                                                                                                                (post.userReaction==='care'
+                                                                                                                ) { %>
+                                                                                                                <span
+                                                                                                                    class="text-[20px]">🥰</span>
+                                                                                                                <span
+                                                                                                                    class="text-sm font-bold text-yellow-500">Care</span>
+                                                                                                                <% } else
+                                                                                                                    { %>
+                                                                                                                    <span
+                                                                                                                        class="material-symbols-outlined">thumb_up</span>
+                                                                                                                    <span
+                                                                                                                        class="text-sm font-bold">Like</span>
+                                                                                                                    <% }
+                                                                                                                        %>
+                                                                                </button>
+
+                                                                                <!-- Reaction Picker -->
+                                                                                <div
+                                                                                    class="reaction-picker absolute bottom-full left-0 mb-2 bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700 rounded-full px-2 py-1 flex gap-2 z-[100]">
+                                                                                    <div class="relative group/emoji">
+                                                                                        <button
+                                                                                            class="reaction-emoji text-2xl p-1 hover:scale-125 transition-transform"
+                                                                                            data-type="like">👍</button>
+                                                                                        <div class="reaction-label">Like
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="relative group/emoji">
+                                                                                        <button
+                                                                                            class="reaction-emoji text-2xl p-1 hover:scale-125 transition-transform"
+                                                                                            data-type="love">❤️</button>
+                                                                                        <div class="reaction-label">Love
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="relative group/emoji">
+                                                                                        <button
+                                                                                            class="reaction-emoji text-2xl p-1 hover:scale-125 transition-transform"
+                                                                                            data-type="care">🥰</button>
+                                                                                        <div class="reaction-label">Care
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="relative group/emoji">
+                                                                                        <button
+                                                                                            class="reaction-emoji text-2xl p-1 hover:scale-125 transition-transform"
+                                                                                            data-type="haha">😂</button>
+                                                                                        <div class="reaction-label">Haha
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="relative group/emoji">
+                                                                                        <button
+                                                                                            class="reaction-emoji text-2xl p-1 hover:scale-125 transition-transform"
+                                                                                            data-type="wow">😮</button>
+                                                                                        <div class="reaction-label">Wow
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="relative group/emoji">
+                                                                                        <button
+                                                                                            class="reaction-emoji text-2xl p-1 hover:scale-125 transition-transform"
+                                                                                            data-type="sad">😢</button>
+                                                                                        <div class="reaction-label">Sad
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="relative group/emoji">
+                                                                                        <button
+                                                                                            class="reaction-emoji text-2xl p-1 hover:scale-125 transition-transform"
+                                                                                            data-type="angry">😡</button>
+                                                                                        <div class="reaction-label">
+                                                                                            Angry</div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <button
+                                                                                class="comment-toggle-btn group flex items-center gap-2 text-[#60758a] hover:text-primary transition-colors">
+                                                                                <span
+                                                                                    class="material-symbols-outlined group-hover:bg-primary/10 p-2 rounded-full">chat_bubble</span>
+                                                                                <span class="text-sm font-bold">
+                                                                                    <%= post.commentCount %>
+                                                                                </span>
+                                                                            </button>
+
+                                                                            <!-- Reaction Summary -->
+                                                                            <div
+                                                                                class="flex items-center gap-1 text-[#60758a] text-xs font-medium ml-auto reaction-summary">
+                                                                                <% if (post.reactionCount> 0) { %>
+                                                                                    <div class="flex -space-x-1 mr-1">
+                                                                                        <%
+                                                                                            Object.keys(post.reactionBreakdown).sort((a,b)=>
+                                                                                            post.reactionBreakdown[b] -
+                                                                                            post.reactionBreakdown[a]).slice(0,
+                                                                                            3).forEach(type => { %>
+                                                                                            <span
+                                                                                                class="size-4 flex items-center justify-center bg-white dark:bg-slate-800 rounded-full border border-gray-100 dark:border-slate-700"
+                                                                                                title="<%= type %>">
+                                                                                                <%= type==='like' ? '👍'
+                                                                                                    : type==='love'
+                                                                                                    ? '❤️' :
+                                                                                                    type==='haha' ? '😂'
+                                                                                                    : type==='wow'
+                                                                                                    ? '😮' :
+                                                                                                    type==='sad' ? '😢'
+                                                                                                    : type==='angry'
+                                                                                                    ? '😡' : '🥰' %>
+                                                                                            </span>
+                                                                                            <% }) %>
+                                                                                    </div>
+                                                                                    <span class="total-count">
+                                                                                        <%= post.reactionCount %>
+                                                                                    </span>
+                                                                                    <% } %>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button
+                                                                            class="text-[#60758a] hover:text-primary hover:bg-primary/10 p-2 rounded-full transition-colors">
+                                                                            <span
+                                                                                class="material-symbols-outlined">share</span>
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <!-- Comments Section -->
+                                                                    <div class="comments-section mt-4 px-4 border-t border-gray-50 dark:border-slate-800"
+                                                                        id="comments-<%= post._id %>"
+                                                                        data-post-id="<%= post._id %>">
+                                                                        <!-- Comment Input -->
+                                                                        <div class="flex gap-3 py-4">
+                                                                            <div class="shrink-0">
+                                                                                <div class="size-8 rounded-full bg-cover bg-center"
+                                                                                    style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="flex-1 relative">
+                                                                                <textarea
+                                                                                    placeholder="Write a comment..."
+                                                                                    class="comment-input w-full bg-gray-100 dark:bg-slate-800 border-none rounded-2xl px-4 py-2 text-sm focus:ring-1 focus:ring-primary outline-none resize-none min-h-[36px]"
+                                                                                    rows="1"></textarea>
+                                                                                <button
+                                                                                    class="submit-comment-btn absolute right-2 bottom-1.5 text-primary opacity-50 hover:opacity-100 transition-opacity disabled:opacity-30">
+                                                                                    <span
+                                                                                        class="material-symbols-outlined text-[20px]">send</span>
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <!-- Comments List Container -->
+                                                                        <div class="comments-list flex flex-col gap-4">
+                                                                            <div class="comment-skeletons hidden">
+                                                                                <div class="flex gap-3 animate-pulse">
+                                                                                    <div
+                                                                                        class="size-8 bg-gray-200 dark:bg-slate-700 rounded-full">
+                                                                                    </div>
+                                                                                    <div class="flex-1">
+                                                                                        <div
+                                                                                            class="h-10 bg-gray-200 dark:bg-slate-700 rounded-2xl w-3/4">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                            <div class="comments-container"></div>
+
+                                                                            <button
+                                                                                class="load-more-comments hidden text-xs font-bold text-[#60758a] hover:underline py-2">
+                                                                                Load more comments
+                                                                            </button>
+
+                                                                            <div
+                                                                                class="empty-comments hidden text-center py-6 text-[#60758a] text-sm">
+                                                                                Be the first to comment
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                        </div>
                                     </div>
-                                    <div
-                                        class="border-t border-[#f0f2f5] dark:border-[#2d3a48] pt-1 flex justify-between">
+                                </article>
+                                <% }) %>
+                                    <% } else { %>
+                                        <div class="text-center py-10 opacity-50">
+                                            <span class="material-symbols-outlined text-6xl mb-4">post_add</span>
+                                            <p>No posts yet. Start by creating your first post!</p>
+                                        </div>
+                                        <% } %>
+                    </div>
+                </div>
+        </main>
+        <!-- Mobile Bottom Nav (visible on small screens) -->
+        <div
+            class="fixed bottom-0 w-full bg-white dark:bg-[#1a242d] border-t border-[#f0f2f5] dark:border-[#2d3a48] flex justify-around py-3 md:hidden z-50">
+            <a href="/dashboard" class="text-primary"><span class="material-symbols-outlined">home</span></a>
+            <button class="text-[#60758a] dark:text-gray-400"><span
+                    class="material-symbols-outlined">explore</span></button>
+            <button class="text-[#60758a] dark:text-gray-400"><span
+                    class="material-symbols-outlined">add_box</span></button>
+            <button id="noti-btn-mobile" class="text-[#60758a] dark:text-gray-400"><span
+                    class="material-symbols-outlined">notifications</span></button>
+            <button class="text-[#60758a] dark:text-gray-400"><span
+                    class="material-symbols-outlined">person</span></button>
+        </div>
+        <!-- Notifications Sidebar Overlay -->
+        <div id="notifications-overlay" class="fixed inset-0 z-[60] hidden">
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" id="close-noti"></div>
+            <aside
+                class="absolute right-0 top-0 w-full max-w-[400px] bg-white dark:bg-[#1a242d] h-full shadow-2xl flex flex-col border-l border-[#f0f2f5] dark:border-[#2d3a48] translate-x-full"
+                id="notifications-sidebar">
+                <div class="p-4 border-b border-[#f0f2f5] dark:border-[#2d3a48] flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-xl font-extrabold tracking-tight text-[#111418] dark:text-white">Notifications
+                        </h2>
+                        <span id="sidebar-noti-count"
+                            class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full hidden">0</span>
+                    </div>
+                    <button id="mark-all-read-btn" class="text-primary text-sm font-semibold hover:underline">Mark all
+                        as
+                        read</button>
+                </div>
+                <div class="flex-1 overflow-y-auto no-scrollbar">
+                    <div class="p-4 pb-2">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold">Friend Requests</h3>
+                            <a class="text-primary text-sm font-semibold hover:underline" href="#">See all</a>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex gap-3">
+                                <div class="size-14 rounded-full bg-cover bg-center shrink-0"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuADSlsWK6e4Gz_lsVSOsfLs7529OJdtmKGa3qIA7FyHjz3Y5ISn_kfM31F1DTycVOFL139CmxkHNTxrdMqPJ8PSx-NWjXFpdxCOCR5SHs__ndTU9HGWO0mfjrLEdb4C47F7Tl4AIOxIgxXkNuW_aSGaddkWQG8KiqfwZ5v4x4w81QvfPFsx9w7FKsp-SWEHeOjTJHKEEmlj0z2wg6zEbwLqbRJN4JY2KXJRHOLnDhzt7NLDwG3mv1JFX3GNyshVTrCmw9hYIXoHW6M");'>
+                                </div>
+                                <div class="flex-1 space-y-2">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <p class="font-bold text-sm leading-tight text-[#111418] dark:text-white">
+                                                Marcus Chen</p>
+                                            <p class="text-xs text-[#60758a] dark:text-gray-400">12 mutual friends</p>
+                                        </div>
+                                        <span class="text-[10px] text-[#60758a] dark:text-gray-400">1h</span>
+                                    </div>
+                                    <div class="flex gap-2">
                                         <button
-                                            class="flex-1 py-2 flex items-center justify-center gap-2 font-bold text-[#60758a] dark:text-gray-400 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] rounded-lg transition-colors">
-                                            <span class="material-symbols-outlined">thumb_up</span>
-                                            Like
-                                        </button>
+                                            class="flex-1 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-blue-600 transition-colors">Confirm</button>
                                         <button
-                                            class="flex-1 py-2 flex items-center justify-center gap-2 font-bold text-[#60758a] dark:text-gray-400 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] rounded-lg transition-colors">
-                                            <span class="material-symbols-outlined">chat_bubble</span>
-                                            Comment
-                                        </button>
-                                        <button
-                                            class="flex-1 py-2 flex items-center justify-center gap-2 font-bold text-[#60758a] dark:text-gray-400 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] rounded-lg transition-colors">
-                                            <span class="material-symbols-outlined">share</span>
-                                            Share
-                                        </button>
+                                            class="flex-1 py-1.5 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white text-xs font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Delete</button>
                                     </div>
                                 </div>
-            </div>
-            <% }) %>
-                <% } else { %>
-                    <div class="text-center py-10 opacity-50">
-                        <span class="material-symbols-outlined text-6xl mb-4">post_add</span>
-                        <p>No posts yet. Start by creating your first post!</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="size-14 rounded-full bg-cover bg-center shrink-0"
+                                    style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB2rPwMNesUYqZJidYKNH5XlxsgOaEBw15ePeFJ2kmpylZoXSjKFq2ZQWV9dvH-lEnRUokMWJNQKAd5znkQqEhoKhvygNDLNMMoNjd0d0cbKy69-dggluygYTSrIOAXd1x3fuRHnDeZOILPdEX4zk4n-Z6Tf9s87d19mFraNKpDilYQxqcqWdW1ejEQ6WFxB3TSsbXLgtrzBpNRz7DmW3O0ymViwZjhTLdtSTZVduMz9M66ArwQ9YGbFGZV5n6f7nEv824yS26dO3A");'>
+                                </div>
+                                <div class="flex-1 space-y-2">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <p class="font-bold text-sm leading-tight text-[#111418] dark:text-white">
+                                                Elena Vance</p>
+                                            <p class="text-xs text-[#60758a] dark:text-gray-400">5 mutual friends</p>
+                                        </div>
+                                        <span class="text-[10px] text-[#60758a] dark:text-gray-400">4h</span>
+                                    </div>
+                                    <div class="flex gap-2">
+                                        <button
+                                            class="flex-1 py-1.5 bg-primary text-white text-xs font-bold rounded-lg hover:bg-blue-600 transition-colors">Confirm</button>
+                                        <button
+                                            class="flex-1 py-1.5 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white text-xs font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <% } %>
-    </div>
-    </div>
-    </main>
-    <!-- Mobile Bottom Nav (visible on small screens) -->
-    <div
-        class="fixed bottom-0 w-full bg-white dark:bg-[#1a242d] border-t border-[#f0f2f5] dark:border-[#2d3a48] flex justify-around py-3 md:hidden z-50">
-        <a href="/dashboard" class="text-primary"><span class="material-symbols-outlined">home</span></a>
-        <button class="text-[#60758a] dark:text-gray-400"><span
-                class="material-symbols-outlined">explore</span></button>
-        <button class="text-[#60758a] dark:text-gray-400"><span
-                class="material-symbols-outlined">add_box</span></button>
-        <button id="noti-btn-mobile" class="text-[#60758a] dark:text-gray-400"><span
-                class="material-symbols-outlined">notifications</span></button>
-        <button class="text-[#60758a] dark:text-gray-400"><span class="material-symbols-outlined">person</span></button>
-    </div>
-    <!-- Notifications Sidebar Overlay -->
-    <div id="notifications-overlay" class="fixed inset-0 z-[60] hidden">
-        <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" id="close-noti"></div>
-        <aside
-            class="absolute right-0 top-0 w-full max-w-[400px] bg-white dark:bg-[#1a242d] h-full shadow-2xl flex flex-col border-l border-[#f0f2f5] dark:border-[#2d3a48] translate-x-full"
-            id="notifications-sidebar">
-            <div class="p-4 border-b border-[#f0f2f5] dark:border-[#2d3a48] flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <h2 class="text-xl font-extrabold tracking-tight text-[#111418] dark:text-white">Notifications</h2>
-                    <span class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">3</span>
+                    <div class="h-[1px] bg-[#f0f2f5] dark:bg-[#2d3a48] mx-4 my-2"></div>
+                    <div class="p-4 pt-2">
+                        <h3 class="text-lg font-bold mb-3">Earlier</h3>
+                        <div id="sidebar-notifications-list" class="flex flex-col -mx-4">
+                            <!-- Notifications will be loaded here -->
+                        </div>
+                    </div>
                 </div>
-                <button class="text-primary text-sm font-semibold hover:underline">Mark all as read</button>
-            </div>
-            <div class="flex-1 overflow-y-auto no-scrollbar">
-                <div class="flex flex-col">
-                    <div
-                        class="p-4 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] cursor-pointer flex gap-3 group transition-colors relative border-b border-[#f0f2f5]/50 dark:border-[#2d3a48]/50">
+                <div class="p-4 border-t border-[#f0f2f5] dark:border-[#2d3a48]">
+                    <button
+                        class="w-full py-2.5 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                        See All Notifications
+                    </button>
+                </div>
+            </aside>
+        </div>
+
+        <script src="https://unpkg.com/picmo@latest/dist/umd/index.js"></script>
+        <script>
+            const GIPHY_API_KEY = '<%= process.env.GIPHY_API_KEY %>';
+
+            // Textarea & Selection Logic
+            const postTextarea = document.querySelector('textarea[name="content_text"]');
+
+            // Media Preview Logic (Image/GIF)
+            const imageInput = document.getElementById('imageInput');
+            const gifInput = document.getElementById('gifInput');
+            const mediaPreview = document.getElementById('mediaPreview');
+            const previewImg = mediaPreview.querySelector('img');
+            const removeMedia = document.getElementById('removeMedia');
+
+            if (imageInput) {
+                imageInput.addEventListener('change', function () {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            previewImg.src = e.target.result;
+                            mediaPreview.classList.remove('hidden');
+                            gifInput.value = ''; // Clear GIF if image is selected
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            if (removeMedia) {
+                removeMedia.addEventListener('click', function () {
+                    imageInput.value = '';
+                    gifInput.value = '';
+                    mediaPreview.classList.add('hidden');
+                    previewImg.src = '';
+                });
+            }
+
+            // Emoji Picker Logic
+            const emojiPickerBtn = document.getElementById('emojiPickerBtn');
+            const emojiPickerContainer = document.getElementById('emojiPickerContainer');
+            let picker = null;
+
+            if (emojiPickerBtn) {
+                emojiPickerBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (!picker) {
+                        picker = picmo.createPicker({
+                            rootElement: emojiPickerContainer,
+                            theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+                        });
+
+                        picker.addEventListener('emoji:select', (selection) => {
+                            const start = postTextarea.selectionStart;
+                            const end = postTextarea.selectionEnd;
+                            const text = postTextarea.value;
+                            const before = text.substring(0, start);
+                            const after = text.substring(end, text.length);
+                            postTextarea.value = before + selection.emoji + after;
+                            postTextarea.selectionStart = postTextarea.selectionEnd = start + selection.emoji.length;
+                            postTextarea.focus();
+                        });
+                    }
+                    emojiPickerContainer.classList.toggle('hidden');
+                });
+            }
+
+            // Close search/pickers when clicking outside
+            document.addEventListener('click', (e) => {
+                if (picker && !emojiPickerContainer.contains(e.target) && e.target !== emojiPickerBtn) {
+                    emojiPickerContainer.classList.add('hidden');
+                }
+            });
+
+            // GIF Picker Logic
+            const gifModal = document.getElementById('gifModal');
+            const gifPickerBtn = document.getElementById('gifPickerBtn');
+            const closeGifModal = document.getElementById('closeGifModal');
+            const gifSearch = document.getElementById('gifSearch');
+            const gifResults = document.getElementById('gifResults');
+
+            if (gifPickerBtn) {
+                gifPickerBtn.addEventListener('click', () => {
+                    gifModal.classList.remove('hidden');
+                    fetchTrendingGifs();
+                });
+            }
+
+            if (closeGifModal) closeGifModal.addEventListener('click', () => gifModal.classList.add('hidden'));
+
+            let searchTimeout;
+            if (gifSearch) {
+                gifSearch.addEventListener('input', (e) => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        const query = e.target.value;
+                        if (query) {
+                            searchGifs(query);
+                        } else {
+                            fetchTrendingGifs();
+                        }
+                    }, 500);
+                });
+            }
+
+            async function fetchTrendingGifs() {
+                try {
+                    const response = await fetch(`https://api.giphy.com/v1/gifs/trending?api_key=${GIPHY_API_KEY}&limit=20`);
+                    const { data } = await response.json();
+                    displayGifs(data);
+                } catch (err) {
+                    console.error('Error fetching trending GIFs:', err);
+                }
+            }
+
+            async function searchGifs(query) {
+                try {
+                    const response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${GIPHY_API_KEY}&q=${query}&limit=20`);
+                    const { data } = await response.json();
+                    displayGifs(data);
+                } catch (err) {
+                    console.error('Error searching GIFs:', err);
+                }
+            }
+
+            function displayGifs(gifs) {
+                if (!gifResults) return;
+                gifResults.innerHTML = '';
+                gifs.forEach(gif => {
+                    const img = document.createElement('img');
+                    img.src = gif.images.fixed_height.url;
+                    img.className = 'w-full h-32 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity';
+                    img.onclick = () => {
+                        selectGif(gif.images.original.url);
+                    };
+                    gifResults.appendChild(img);
+                });
+            }
+
+            function selectGif(url) {
+                gifInput.value = url;
+                previewImg.src = url;
+                mediaPreview.classList.remove('hidden');
+                imageInput.value = ''; // Clear image if GIF is selected
+                gifModal.classList.add('hidden');
+            }
+
+            // Poll Logic
+            const pollBtn = document.getElementById('pollBtn');
+            const pollCreator = document.getElementById('pollCreator');
+            const removePoll = document.getElementById('removePoll');
+            const addPollOption = document.getElementById('addPollOption');
+            const pollOptionsContainer = document.getElementById('pollOptionsContainer');
+
+            if (pollBtn) {
+                pollBtn.addEventListener('click', () => {
+                    pollCreator.classList.toggle('hidden');
+                    if (!pollCreator.classList.contains('hidden')) {
+                        // Focus the first option when opened
+                        pollOptionsContainer.querySelector('input').focus();
+                        // Disable image/gif if poll is active (X style)
+                        imageInput.value = '';
+                        gifInput.value = '';
+                        mediaPreview.classList.add('hidden');
+                    }
+                });
+            }
+
+            if (removePoll) {
+                removePoll.addEventListener('click', () => {
+                    pollCreator.classList.add('hidden');
+                    // Clear inputs
+                    pollOptionsContainer.querySelectorAll('input').forEach(input => input.value = '');
+                });
+            }
+
+            if (addPollOption) {
+                addPollOption.addEventListener('click', () => {
+                    const inputs = pollOptionsContainer.querySelectorAll('input');
+                    if (inputs.length < 4) {
+                        const newInput = document.createElement('input');
+                        newInput.type = 'text';
+                        newInput.name = 'poll_options[]';
+                        newInput.placeholder = `Option ${inputs.length + 1}`;
+                        newInput.className = 'w-full px-4 py-2 bg-white dark:bg-slate-900 border border-[#f0f2f5] dark:border-[#2d3a48] rounded-lg text-sm dark:text-white focus:ring-1 focus:ring-primary outline-none';
+                        pollOptionsContainer.appendChild(newInput);
+                        newInput.focus();
+
+                        if (inputs.length + 1 === 4) {
+                            addPollOption.classList.add('hidden');
+                        }
+                    }
+                });
+            }
+
+            // Schedule Logic
+            const scheduleBtn = document.getElementById('scheduleBtn');
+            const schedulePanel = document.getElementById('schedulePanel');
+            const scheduleToggle = document.getElementById('scheduleToggle');
+            const scheduledAt = document.getElementById('scheduledAt');
+            const clearSchedule = document.getElementById('clearSchedule');
+            const removeSchedule = document.getElementById('removeSchedule');
+
+            if (scheduledAt) scheduledAt.disabled = true;
+
+            if (scheduleBtn) {
+                scheduleBtn.addEventListener('click', () => {
+                    schedulePanel.classList.toggle('hidden');
+                });
+            }
+
+            if (scheduleToggle) {
+                scheduleToggle.addEventListener('change', () => {
+                    scheduledAt.disabled = !scheduleToggle.checked;
+                    if (scheduleToggle.checked && !scheduledAt.value) {
+                        const now = new Date();
+                        now.setHours(now.getHours() + 1);
+                        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                        scheduledAt.value = now.toISOString().slice(0, 16);
+                    }
+                    if (!scheduleToggle.checked) scheduledAt.value = "";
+                });
+            }
+
+            if (clearSchedule) {
+                clearSchedule.addEventListener('click', () => {
+                    scheduleToggle.checked = false;
+                    scheduledAt.value = "";
+                    scheduledAt.disabled = true;
+                });
+            }
+
+            if (removeSchedule) {
+                removeSchedule.addEventListener('click', () => {
+                    schedulePanel.classList.add('hidden');
+                });
+            }
+
+            // Voting Logic
+            document.querySelectorAll('.poll-option-btn').forEach(btn => {
+                btn.addEventListener('click', async function () {
+                    if (this.disabled) return;
+
+                    const postId = this.closest('.poll-container').dataset.postId;
+                    const optionId = this.dataset.optionId;
+
+                    try {
+                        const response = await fetch(`/posts/${postId}/vote`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ optionId })
+                        });
+
+                        if (response.ok) {
+                            window.location.reload(); // Simple reload for now to reflect votes
+                        } else {
+                            const err = await response.text();
+                            alert(err);
+                        }
+                    } catch (err) {
+                        console.error('Voting error:', err);
+                    }
+                });
+            });
+
+            // Unified Reaction and Comment Logic
+            const postCommentStates = {};
+
+            function initCommentToggles() {
+                document.querySelectorAll('.comment-toggle-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const article = btn.closest('article');
+                        const section = article.querySelector('.comments-section');
+                        if (!section) return;
+
+                        const isShowing = section.classList.toggle('show');
+                        const postId = section.id.replace('comments-', '');
+
+                        if (isShowing && !postCommentStates[postId]) {
+                            postCommentStates[postId] = { page: 1, loading: false };
+                            loadComments(postId);
+                        }
+                    });
+                });
+            }
+
+            async function loadComments(postId, loadMore = false) {
+                const state = postCommentStates[postId];
+                if (state.loading) return;
+                state.loading = true;
+
+                const section = document.getElementById(`comments-${postId}`);
+                const loader = section.querySelector('.comment-skeletons');
+                const container = section.querySelector('.comments-container');
+                const loadMoreBtn = section.querySelector('.load-more-comments');
+                const emptyState = section.querySelector('.empty-comments');
+
+                if (!loadMore) loader.classList.remove('hidden');
+
+                try {
+                    const res = await fetch(`/posts/${postId}/comments?page=${state.page}`);
+                    const data = await res.json();
+
+                    loader.classList.add('hidden');
+                    if (data.comments.length === 0 && !loadMore) {
+                        emptyState.classList.remove('hidden');
+                    } else {
+                        emptyState.classList.add('hidden');
+                        data.comments.forEach(comment => {
+                            container.insertAdjacentHTML('beforeend', renderCommentItem(comment));
+                        });
+                        if (data.hasMore) {
+                            loadMoreBtn.classList.remove('hidden');
+                            state.page++;
+                        } else {
+                            loadMoreBtn.classList.add('hidden');
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading comments:', err);
+                } finally {
+                    state.loading = false;
+                }
+            }
+
+            function renderCommentItem(comment, isReply = false) {
+                const timeAgo = formatTimeAgo(comment.created_at);
+
+                const getReactionBtnContent = (userReaction) => {
+                    const emojiMap = {
+                        like: { icon: '<span class="material-symbols-outlined fill-current text-primary">thumb_up</span>', label: 'Like', color: 'text-primary' },
+                        love: { icon: '<span class="text-[20px]">❤️</span>', label: 'Love', color: 'text-red-500' },
+                        haha: { icon: '<span class="text-[20px]">😂</span>', label: 'Haha', color: 'text-yellow-500' },
+                        wow: { icon: '<span class="text-[20px]">😮</span>', label: 'Wow', color: 'text-yellow-500' },
+                        sad: { icon: '<span class="text-[20px]">😢</span>', label: 'Sad', color: 'text-yellow-500' },
+                        angry: { icon: '<span class="text-[20px]">😡</span>', label: 'Angry', color: 'text-orange-600' },
+                        care: { icon: '<span class="text-[20px]">🥰</span>', label: 'Care', color: 'text-yellow-500' }
+                    };
+                    if (userReaction && emojiMap[userReaction]) {
+                        const config = emojiMap[userReaction];
+                        return `${config.icon}<span class="text-xs font-bold ${config.color}">${config.label}</span>`;
+                    }
+                    return '<span class="material-symbols-outlined text-[18px]">thumb_up</span><span class="text-xs font-bold group-hover:text-primary">Like</span>';
+                };
+
+                const reactionBtnContent = getReactionBtnContent(comment.userReaction);
+                const reactionClass = comment.userReaction ? 'text-primary' : 'text-[#60758a] hover:text-primary';
+                const displayHandle = comment.user_id.username || comment.user_id.fullName.replace(/\s+/g, '').toLowerCase();
+
+                let breakdownHtml = '';
+                if (comment.reactionCount > 0 && comment.reactionBreakdown) {
+                    breakdownHtml = '<div class="flex -space-x-1 mr-1">';
+                    const sortedTypes = Object.keys(comment.reactionBreakdown).sort((a, b) => comment.reactionBreakdown[b] - comment.reactionBreakdown[a]).slice(0, 3);
+                    sortedTypes.forEach(type => {
+                        const emoji = { like: '👍', love: '❤️', haha: '😂', wow: '😮', sad: '😢', angry: '😡', care: '🥰' }[type];
+                        breakdownHtml += `<span class="size-3 flex items-center justify-center bg-white dark:bg-slate-800 rounded-full border border-gray-100 dark:border-slate-700 text-[10px]" title="${type}">${emoji}</span>`;
+                    });
+                    breakdownHtml += `</div><span class="total-count text-[10px]">${comment.reactionCount}</span>`;
+                }
+
+                return `
+                    <div class="flex gap-3 ${isReply ? 'ml-12' : ''}" id="comment-${comment._id}">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-9 shrink-0" 
+                            style='background-image: url("/uploads/${comment.user_id.profile_picture || "default-profile.png"}");'>
+                        </div>
+                        <div class="flex-1">
+                            <div class="bg-[#f0f2f5] dark:bg-slate-800 rounded-2xl px-3 py-2 inline-block min-w-[200px]">
+                                <div class="flex items-center justify-between gap-4">
+                                    <span class="font-bold text-xs capitalize">${comment.user_id.fullName}</span>
+                                    <span class="text-[10px] text-[#60758a]">${timeAgo}</span>
+                                </div>
+                                <p class="text-sm mt-0.5">
+                                    ${comment.reply_to_user_id ? `<span class="text-primary font-medium">@${comment.reply_to_user_id.username || comment.reply_to_user_id.fullName.replace(/\s+/g, '').toLowerCase()}</span> ` : ''}
+                                    ${comment.comment_text}
+                                </p>
+                                <div class="reaction-summary flex items-center gap-1 justify-end mt-1 h-4">
+                                    ${breakdownHtml}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4 mt-1 px-2 relative">
+                                <div class="relative reaction-container group" data-comment-id="${comment._id}">
+                                    <button class="reaction-btn flex items-center gap-1 hover:bg-gray-100 dark:hover:bg-slate-700 px-2 py-1 rounded-full transition-colors ${reactionClass}">
+                                        ${reactionBtnContent}
+                                    </button>
+                                    <div class="reaction-picker absolute bottom-full left-0 mb-2 bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700 rounded-full px-2 py-1 flex gap-2 z-[100]">
+                                        ${['like', 'love', 'care', 'haha', 'wow', 'sad', 'angry'].map(type => `
+                                            <div class="relative group/emoji">
+                                                <button class="reaction-emoji text-xl p-1 hover:scale-125 transition-transform" data-type="${type}">
+                                                    ${{ like: '👍', love: '❤️', care: '🥰', haha: '😂', wow: '😮', sad: '😢', angry: '😡' }[type]}
+                                                </button>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <button class="reply-btn text-xs font-bold text-[#60758a] hover:text-primary" 
+                                    data-user="${displayHandle}" data-id="${comment.parent_comment_id || comment._id}">Reply</button>
+                            </div>
+                            <div class="replies-container mt-2">
+                                ${comment.replies ? comment.replies.map(r => renderCommentItem(r, true)).join('') : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Delegated Reply Logic
+            document.body.addEventListener('click', (e) => {
+                const btn = e.target.closest('.reply-btn');
+                if (!btn) return;
+
+                const commentSection = btn.closest('.comments-section');
+                if (!commentSection) return;
+
+                const input = commentSection.querySelector('.comment-input');
+                if (input) {
+                    input.value = `@${btn.dataset.user} `;
+                    input.dataset.parentId = btn.dataset.id;
+                    input.focus();
+                    input.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+
+            // Comment Submission Logic
+            document.body.addEventListener("click", async (e) => {
+                const btn = e.target.closest(".submit-comment-btn");
+                if (!btn) return;
+
+                e.preventDefault();
+                const commentSection = btn.closest(".comments-section");
+                if (!commentSection) return;
+
+                const postId = commentSection.dataset.postId;
+                const textarea = commentSection.querySelector(".comment-input");
+                const commentText = textarea.value.trim();
+                const commentsContainer = commentSection.querySelector(".comments-container");
+                const emptyMessage = commentSection.querySelector(".empty-comments");
+                const parentId = textarea.dataset.parentId || null;
+
+                if (!commentText) return;
+
+                try {
+                    btn.disabled = true;
+                    const res = await fetch(`/posts/${postId}/comments`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            comment_text: commentText,
+                            parent_comment_id: parentId
+                        })
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data.success) {
+                            const comment = data.comment;
+                            if (parentId) {
+                                const parentComment = commentSection.querySelector(`#comment-${parentId}`);
+                                if (parentComment) {
+                                    const repliesContainer = parentComment.querySelector('.replies-container');
+                                    repliesContainer.insertAdjacentHTML("beforeend", renderCommentItem(comment, true));
+                                }
+                            } else {
+                                commentsContainer.insertAdjacentHTML("afterbegin", renderCommentItem(comment, false));
+                                emptyMessage.classList.add("hidden");
+                            }
+                            textarea.value = "";
+                            delete textarea.dataset.parentId;
+                        }
+                    }
+                } catch (err) {
+                    console.error("Submission error:", err);
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+
+            // Delegated Reaction Logic
+            document.body.addEventListener('click', (e) => {
+                const btn = e.target.closest('.reaction-btn');
+                if (!btn) return;
+                const container = btn.closest('.reaction-container');
+                if (!container) return;
+
+                const isReacted = btn.classList.contains('text-primary') || btn.querySelector('.text-[20px]');
+                const labelEl = btn.querySelector('span:last-child');
+                const currentLabel = labelEl ? labelEl.textContent.toLowerCase() : 'like';
+
+                const postId = container.dataset.postId;
+                const commentId = container.dataset.commentId;
+                const id = postId || commentId;
+                const type = postId ? 'post' : 'comment';
+
+                handleReaction(id, type, isReacted ? currentLabel : 'like', container);
+            });
+
+            document.body.addEventListener('click', (e) => {
+                const emojiBtn = e.target.closest('.reaction-emoji');
+                if (!emojiBtn) return;
+                const container = emojiBtn.closest('.reaction-container');
+                if (!container) return;
+
+                const postId = container.dataset.postId;
+                const commentId = container.dataset.commentId;
+                const id = postId || commentId;
+                const type = postId ? 'post' : 'comment';
+
+                handleReaction(id, type, emojiBtn.dataset.type, container);
+                container.classList.remove('show-picker');
+            });
+
+            async function handleReaction(id, targetType, reactionType, container) {
+                try {
+                    const endpoint = targetType === 'post' ? `/posts/${id}/react` : `/comments/${id}/react`;
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reaction_type: reactionType })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateReactionUI(container, data);
+                    }
+                } catch (err) {
+                    console.error('Reaction error:', err);
+                }
+            }
+
+            function updateReactionUI(container, data) {
+                const btn = container.querySelector('.reaction-btn');
+                let summary = container.querySelector('.reaction-summary');
+                if (!summary) {
+                    if (container.parentElement && container.parentElement.querySelector('.reaction-summary')) {
+                        summary = container.parentElement.querySelector('.reaction-summary');
+                    } else {
+                        const commentItem = container.closest('[id^="comment-"]');
+                        if (commentItem) summary = commentItem.querySelector('.reaction-summary');
+                    }
+                }
+
+                if (data.userReaction) {
+                    const type = data.userReaction;
+                    const emojiMap = {
+                        like: { icon: '<span class="material-symbols-outlined fill-current text-primary">thumb_up</span>', label: 'Like', color: 'text-primary' },
+                        love: { icon: '<span class="text-[20px]">❤️</span>', label: 'Love', color: 'text-red-500' },
+                        haha: { icon: '<span class="text-[20px]">😂</span>', label: 'Haha', color: 'text-yellow-500' },
+                        wow: { icon: '<span class="text-[20px]">😮</span>', label: 'Wow', color: 'text-yellow-500' },
+                        sad: { icon: '<span class="text-[20px]">😢</span>', label: 'Sad', color: 'text-yellow-500' },
+                        angry: { icon: '<span class="text-[20px]">😡</span>', label: 'Angry', color: 'text-orange-600' },
+                        care: { icon: '<span class="text-[20px]">🥰</span>', label: 'Care', color: 'text-yellow-500' }
+                    };
+                    const config = emojiMap[type];
+                    btn.innerHTML = `${config.icon}<span class="text-xs font-bold ${config.color}">${config.label}</span>`;
+                } else {
+                    btn.innerHTML = '<span class="material-symbols-outlined text-[18px]">thumb_up</span><span class="text-xs font-bold group-hover:text-primary">Like</span>';
+                }
+
+                if (data.reactionCount > 0 && summary) {
+                    let breakdownHtml = '<div class="flex -space-x-1 mr-1">';
+                    const sortedTypes = Object.keys(data.reactionBreakdown).sort((a, b) => data.reactionBreakdown[b] - data.reactionBreakdown[a]).slice(0, 3);
+                    sortedTypes.forEach(type => {
+                        const emoji = { like: '👍', love: '❤️', haha: '😂', wow: '😮', sad: '😢', angry: '😡', care: '🥰' }[type];
+                        const sizeClass = container.dataset.commentId ? 'size-3 text-[10px]' : 'size-4';
+                        breakdownHtml += `<span class="${sizeClass} flex items-center justify-center bg-white dark:bg-slate-800 rounded-full border border-gray-100 dark:border-slate-700" title="${type}">${emoji}</span>`;
+                    });
+                    breakdownHtml += `</div><span class="total-count ${container.dataset.commentId ? 'text-[10px]' : ''}">${data.reactionCount}</span>`;
+                    summary.innerHTML = breakdownHtml;
+                } else if (summary) {
+                    summary.innerHTML = '';
+                }
+            }
+
+            initCommentToggles();
+        </script>
+        <script>
+            const notiBtn = document.getElementById('noti-btn');
+            const notiBtnMobile = document.getElementById('noti-btn-mobile');
+            const notiSidebar = document.getElementById('notifications-sidebar');
+            const notiOverlay = document.getElementById('notifications-overlay');
+            const closeNoti = document.getElementById('close-noti');
+            const list = document.getElementById('sidebar-notifications-list');
+            const badgeHeader = document.getElementById('header-noti-badge');
+            const badgeSidebar = document.getElementById('sidebar-noti-count');
+            const markAllBtn = document.getElementById('mark-all-read-btn');
+
+            async function loadSidebarNotifications() {
+                try {
+                    const res = await fetch('/notifications/sidebar');
+                    const data = await res.json();
+
+                    if (!data.success) return;
+
+                    list.innerHTML = '';
+
+                    if (badgeSidebar) {
+                        badgeSidebar.textContent = data.unreadCount;
+                        badgeSidebar.classList.toggle('hidden', data.unreadCount === 0);
+                    }
+                    if (badgeHeader) {
+                        badgeHeader.classList.toggle('hidden', data.unreadCount === 0);
+                    }
+
+                    if (data.notifications.length === 0) {
+                        list.innerHTML = '<div class="p-8 text-center opacity-50 text-sm">No notifications yet</div>';
+                        return;
+                    }
+
+                    data.notifications.forEach(notif => {
+                        const unreadDot = notif.read ? '' : `
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 size-2.5 bg-primary rounded-full"></div>
+                    `;
+
+                        list.innerHTML += `
+                    <div class="p-4 hover:bg-[#f0f2f5] dark:hover:bg-[#2d3a48] cursor-pointer flex gap-3 relative border-b border-[#f0f2f5]/50 dark:border-[#2d3a48]/50 transition-colors">
+                        ${unreadDot}
                         <div class="size-12 rounded-full bg-cover bg-center shrink-0"
-                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB2rPwMNesUYqZJidYKNH5XlxsgOaEBw15ePeFJ2kmpylZoXSjKFq2ZQWV9dvH-lEnRUokMWJNQKAd5znkQqEhoKhvygNDLNMMoNjd0d0cbKy69-dggluygYTSrIOAXd1x3fuRHnDeZOILPdEX4zk4|  n0g2vb_BVViJ1NddIxH6ADznLjyek5zfGiTbms2UCqJXb9PELp39MMoweDbnQoI6e-1FggYIQ2L29-Grd5RYyGHrhCo29YbZtzXBGMe4JCg");'>
+                            style="background-image:url('/uploads/${notif.sender_id?.profile_picture || 'default-profile.png'}')">
                         </div>
                         <div class="flex-1 pr-4">
                             <p class="text-sm text-[#111418] dark:text-white">
-                                <span class="font-bold">Jordan Smith</span> liked your post: "Finally finished the
-                                branding project..."
+                                <span class="font-bold">${notif.sender_id?.fullName || 'Someone'}</span>
+                                ${notif.message}
                             </p>
-                            <p class="text-xs text-primary font-bold mt-1">2 mins ago</p>
+                            <p class="text-xs text-primary font-bold mt-1">
+                                ${formatTimeAgo(notif.created_at)}
+                            </p>
                         </div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-4 border-t border-[#f0f2f5] dark:border-[#2d3a48]">
-                <button
-                    class="w-full py-2.5 bg-[#f0f2f5] dark:bg-[#2d3a48] text-[#111418] dark:text-white font-bold rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-                    See All Notifications
-                </button>
-            </div>
-        </aside>
-    </div>
+                    </div>`;
+                    });
 
-    <script>
-        const notiBtn = document.getElementById('noti-btn');
-        const notiBtnMobile = document.getElementById('noti-btn-mobile');
-        const notiSidebar = document.getElementById('notifications-sidebar');
-        const notiOverlay = document.getElementById('notifications-overlay');
-        const closeNoti = document.getElementById('close-noti');
-
-        function toggleNoti(show) {
-            if (show) {
-                notiOverlay.classList.remove('hidden');
-                setTimeout(() => {
-                    notiSidebar.classList.remove('translate-x-full');
-                }, 10);
-                document.body.classList.add('overflow-hidden');
-            } else {
-                notiSidebar.classList.add('translate-x-full');
-                setTimeout(() => {
-                    notiOverlay.classList.add('hidden');
-                }, 300);
-                document.body.classList.remove('overflow-hidden');
+                } catch (err) {
+                    console.error(err);
+                }
             }
-        }
 
-        if (notiBtn) notiBtn.addEventListener('click', () => toggleNoti(true));
-        if (notiBtnMobile) notiBtnMobile.addEventListener('click', () => toggleNoti(true));
-        if (closeNoti) closeNoti.addEventListener('click', () => toggleNoti(false));
-    </script>
+            function formatTimeAgo(date) {
+                const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+                if (seconds < 60) return 'just now';
+                const minutes = Math.floor(seconds / 60);
+                if (minutes < 60) return `${minutes}m ago`;
+                const hours = Math.floor(minutes / 60);
+                if (hours < 24) return `${hours}h ago`;
+                return `${Math.floor(hours / 24)}d ago`;
+            }
+
+            function toggleNoti(show) {
+                if (show) {
+                    loadSidebarNotifications();
+                    notiOverlay.classList.remove('hidden');
+                    setTimeout(() => {
+                        notiSidebar.classList.remove('translate-x-full');
+                    }, 10);
+                    document.body.classList.add('overflow-hidden');
+                } else {
+                    notiSidebar.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        notiOverlay.classList.add('hidden');
+                    }, 300);
+                    document.body.classList.remove('overflow-hidden');
+                }
+            }
+
+            if (notiBtn) notiBtn.addEventListener('click', () => toggleNoti(true));
+            if (notiBtnMobile) notiBtnMobile.addEventListener('click', () => toggleNoti(true));
+            if (closeNoti) closeNoti.addEventListener('click', () => toggleNoti(false));
+
+            markAllBtn?.addEventListener('click', async () => {
+                try {
+                    const res = await fetch('/notifications/mark-all-read', { method: 'POST' });
+                    const data = await res.json();
+                    if (data.success) {
+                        loadSidebarNotifications();
+                    }
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+
+            // Initial check for unread count
+            window.addEventListener('load', async () => {
+                try {
+                    const res = await fetch('/notifications/sidebar');
+                    const data = await res.json();
+                    if (data.success && data.unreadCount > 0) {
+                        if (badgeHeader) badgeHeader.classList.remove('hidden');
+                    }
+                } catch (err) { }
+            });
+
+            // Profile Picture Upload Logic
+            const profilePicInput = document.getElementById('profilePicInput');
+            const profilePicDisplay = document.getElementById('profilePicDisplay');
+            const profileActionBtns = document.getElementById('profileActionBtns');
+            const saveProfilePic = document.getElementById('saveProfilePic');
+            const cancelProfilePic = document.getElementById('cancelProfilePic');
+            const profilePicLoader = document.getElementById('profilePicLoader');
+            let originalProfilePicSet = profilePicDisplay?.style.backgroundImage;
+
+            if (profilePicInput) {
+                profilePicInput.addEventListener('change', function () {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            if (profilePicDisplay) profilePicDisplay.style.backgroundImage = `url("${e.target.result}")`;
+                            if (profileActionBtns) profileActionBtns.classList.remove('hidden');
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            if (cancelProfilePic) {
+                cancelProfilePic.addEventListener('click', () => {
+                    if (profilePicInput) profilePicInput.value = '';
+                    if (profilePicDisplay) profilePicDisplay.style.backgroundImage = originalProfilePicSet;
+                    if (profileActionBtns) profileActionBtns.classList.add('hidden');
+                });
+            }
+
+            if (saveProfilePic) {
+                saveProfilePic.addEventListener('click', async () => {
+                    if (!profilePicInput) return;
+                    const file = profilePicInput.files[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
+                    formData.append('profile_picture', file);
+
+                    try {
+                        if (profilePicLoader) profilePicLoader.classList.remove('hidden');
+                        if (profileActionBtns) profileActionBtns.classList.add('hidden');
+
+                        const response = await fetch('/profile/edit', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        const contentType = response.headers.get("content-type");
+                        if (contentType && contentType.indexOf("application/json") !== -1) {
+                            const data = await response.json();
+                            if (data.success) {
+                                originalProfilePicSet = `url("/uploads/${data.user.profile_picture}")`;
+                                if (profilePicDisplay) profilePicDisplay.style.backgroundImage = originalProfilePicSet;
+                                // Update all other instances of user's profile picture on the page
+                                document.querySelectorAll('[data-alt="Your profile avatar"], [data-alt="User profile avatar thumbnail"]').forEach(el => {
+                                    el.style.backgroundImage = originalProfilePicSet;
+                                });
+                                // Reload to show the new automated post in feed
+                                setTimeout(() => window.location.reload(), 500);
+                            } else {
+                                alert(data.message || 'Failed to update profile picture');
+                                cancelProfilePic.click();
+                            }
+                        } else {
+                            // If not JSON, it's likely an HTML error page (404 or redirect)
+                            if (response.status === 404) {
+                                alert('Error: Server route not found (404). PLEASE RESTART YOUR BACKEND SERVER to apply the new routes.');
+                            } else {
+                                const text = await response.text();
+                                alert('Error: Received non-JSON response. Check console.');
+                                console.error('Response body:', text);
+                            }
+                            cancelProfilePic.click();
+                        }
+                    } catch (err) {
+                        console.error('Error uploading profile picture:', err);
+                        alert('Error uploading profile picture: ' + err.message);
+                        cancelProfilePic.click();
+                    }
+                    finally {
+                        if (profilePicLoader) profilePicLoader.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Cover Photo Upload Logic
+            const coverPhotoInput = document.getElementById('coverPhotoInput');
+            const coverPhotoDisplay = document.getElementById('coverPhotoDisplay');
+            const coverActionBtns = document.getElementById('coverActionBtns');
+            const saveCoverPhoto = document.getElementById('saveCoverPhoto');
+            const cancelCoverPhoto = document.getElementById('cancelCoverPhoto');
+            const coverPhotoLoader = document.getElementById('coverPhotoLoader');
+            let originalCoverPhotoSet = coverPhotoDisplay?.style.backgroundImage;
+
+            if (coverPhotoInput) {
+                coverPhotoInput.addEventListener('change', function () {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            if (coverPhotoDisplay) coverPhotoDisplay.style.backgroundImage = `url("${e.target.result}")`;
+                            if (coverActionBtns) coverActionBtns.classList.remove('hidden');
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+
+            if (cancelCoverPhoto) {
+                cancelCoverPhoto.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (coverPhotoInput) coverPhotoInput.value = '';
+                    if (coverPhotoDisplay) coverPhotoDisplay.style.backgroundImage = originalCoverPhotoSet;
+                    if (coverActionBtns) coverActionBtns.classList.add('hidden');
+                });
+            }
+
+            if (saveCoverPhoto) {
+                saveCoverPhoto.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!coverPhotoInput) return;
+                    const file = coverPhotoInput.files[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
+                    formData.append('cover_photo', file);
+
+                    try {
+                        if (coverPhotoLoader) coverPhotoLoader.classList.remove('hidden');
+                        if (coverActionBtns) coverActionBtns.classList.add('hidden');
+
+                        const response = await fetch('/profile/edit', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            originalCoverPhotoSet = `url("/uploads/${data.user.cover_photo}")`;
+                            if (coverPhotoDisplay) coverPhotoDisplay.style.backgroundImage = originalCoverPhotoSet;
+                            // Reload to show the new automated post in feed
+                            setTimeout(() => window.location.reload(), 500);
+                        } else {
+                            alert(data.message || 'Failed to update cover photo');
+                            cancelCoverPhoto.click();
+                        }
+                    } catch (err) {
+                        console.error('Error uploading cover photo:', err);
+                        alert('Error uploading cover photo: ' + err.message);
+                        cancelCoverPhoto.click();
+                    }
+                    finally {
+                        if (coverPhotoLoader) coverPhotoLoader.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Edit Details Form Handling
+            const editDetailsForm = document.getElementById('editDetailsForm');
+            if (editDetailsForm) {
+                editDetailsForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(editDetailsForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    try {
+                        const response = await fetch('/profile/edit', {
+                            method: 'POST',
+                            headers: {
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        });
+
+                        const result = await response.json();
+                        if (result.success) {
+                            window.location.reload();
+                        } else {
+                            alert(result.message || 'Failed to update details');
+                        }
+                    } catch (err) {
+                        console.error('Error updating details:', err);
+                        alert('Error updating details');
+                    }
+                });
+            }
+        </script>
 </body>
 
 </html>

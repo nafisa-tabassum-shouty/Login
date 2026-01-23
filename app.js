@@ -56,6 +56,7 @@ app.use('/', viewRouter);
 app.use('/', authRouter);
 app.use('/', postRouter);
 app.use('/', commentRouter);
+app.use('/', require('./routes/notificationRoutes'));
 
 
 

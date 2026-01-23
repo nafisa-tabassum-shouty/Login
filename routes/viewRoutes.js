@@ -12,7 +12,10 @@ router.get('/terms-of-service', viewController.getTermsOfService);
 router.get('/dashboard', viewController.getDashboard);
 router.get('/profile', viewController.getUserProfile);
 router.get('/profile/edit', viewController.getEditProfileForm);
+router.post('/profile/edit', viewController.updateProfile);
 router.get('/notifications', viewController.getNotifications);
+router.get('/messages', viewController.getMessages);
+router.get('/settings', viewController.getSettings);
 
 
 module.exports = router;

@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         maxlength: [160, 'Bio cannot be more than 160 characters']
     },
+    workPosition: String,
+    workCompany: String,
+    education: String,
+    currentCity: String,
+    hometown: String,
     googleId: {
         type: String
     },

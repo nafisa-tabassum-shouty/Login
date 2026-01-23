@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Settings and Privacy | SocialCircle</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-nav {
+            background-color: rgba(37, 140, 244, 0.1);
+            color: #258cf4;
+            border-left: 3px solid #258cf4;
+        }
+
+        #account-sidebar-toggle:checked~#account-sidebar {
+            transform: translateX(0);
+        }
+
+        #account-sidebar-toggle:checked~#sidebar-overlay {
+            display: block;
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white min-h-screen overflow-x-hidden">
+    <input class="hidden peer" id="account-sidebar-toggle" type="checkbox" />
+    <label class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden transition-opacity duration-300"
+        for="account-sidebar-toggle" id="sidebar-overlay"></label>
+    <aside
+        class="fixed top-0 right-0 h-full w-[360px] bg-white dark:bg-[#1a242f] z-[70] shadow-2xl translate-x-full transition-transform duration-300 ease-in-out flex flex-col overflow-y-auto"
+        id="account-sidebar">
+        <div class="p-4 flex flex-col h-full">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Account</h2>
+                <label class="p-2 rounded-full hover:bg-[#f0f2f5] dark:hover:bg-slate-800 cursor-pointer"
+                    for="account-sidebar-toggle">
+                    <span class="material-symbols-outlined">close</span>
+                </label>
+            </div>
+            <div
+                class="p-2 rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.1)] dark:shadow-[0_2px_12px_rgba(0,0,0,0.3)] bg-white dark:bg-[#242f3a] mb-4">
+                <a class="flex items-center gap-3 p-2 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-700 transition-colors"
+                    href="/profile">
+                    <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                    </div>
+                    <span class="font-bold text-lg">
+                        <%= user.fullName %>
+                    </span>
+                </a>
+                <div class="border-t border-[#f0f2f5] dark:border-slate-700 mt-2 pt-2">
+                    <a class="block px-2 py-1 text-primary text-sm font-semibold hover:underline" href="/profile">See
+                        all profiles</a>
+                </div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <a href="/settings"
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">settings</span>
+                        </div>
+                        <span class="font-medium">Settings & Privacy</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </a>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">help</span>
+                        </div>
+                        <span class="font-medium">Help & Support</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left"
+                    onclick="document.documentElement.classList.toggle('dark')">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">dark_mode</span>
+                        </div>
+                        <span class="font-medium">Display & Accessibility</span>
+                    </div>
+                    <span class="material-symbols-outlined text-[#60758a]">chevron_right</span>
+                </button>
+                <button
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group text-left">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">maps_ugc</span>
+                        </div>
+                        <span class="font-medium">Give Feedback</span>
+                    </div>
+                </button>
+                <a href="/logout"
+                    class="flex items-center justify-between p-3 rounded-lg hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors group mt-2">
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="size-9 rounded-full bg-[#e4e6eb] dark:bg-slate-700 flex items-center justify-center">
+                            <span class="material-symbols-outlined fill-current">logout</span>
+                        </div>
+                        <span class="font-medium">Log Out</span>
+                    </div>
+                </a>
+            </div>
+            <div class="mt-auto pt-6 text-xs text-[#60758a] px-3">
+                <div class="flex flex-wrap gap-x-2 gap-y-1">
+                    <a class="hover:underline" href="#">Privacy</a> ·
+                    <a class="hover:underline" href="#">Terms</a> ·
+                    <a class="hover:underline" href="#">Advertising</a> ·
+                    <a class="hover:underline" href="#">Ad Choices</a> ·
+                    <a class="hover:underline" href="#">Cookies</a> ·
+                    <span>More</span>
+                </div>
+                <p class="mt-2">SocialCircle © 2024</p>
+            </div>
+        </div>
+    </aside>
+
+    <div class="flex flex-col min-h-screen">
+        <!-- Top Navigation Bar -->
+        <header
+            class="sticky top-0 z-50 w-full border-b border-solid border-[#f0f2f5] dark:border-gray-800 bg-white dark:bg-background-dark px-4 md:px-10 py-3">
+            <div class="max-w-[1440px] mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-8">
+                    <a href="/dashboard" class="flex items-center gap-4 text-[#111418] dark:text-white">
+                        <div class="size-8 text-primary">
+                            <svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M44 11.2727C44 14.0109 39.8386 16.3957 33.69 17.6364C39.8386 18.877 44 21.2618 44 24C44 26.7382 39.8386 29.123 33.69 30.3636C39.8386 31.6043 44 33.9891 44 36.7273C44 40.7439 35.0457 44 24 44C12.9543 44 4 40.7439 4 36.7273C4 33.9891 8.16144 31.6043 14.31 30.3636C8.16144 29.123 4 26.7382 4 24C4 21.2618 8.16144 18.877 14.31 17.6364C8.16144 16.3957 4 14.0109 4 11.2727C4 7.25611 12.9543 4 24 4C35.0457 4 44 7.25611 44 11.2727Z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold leading-tight tracking-[-0.015em] hidden sm:block">SocialCircle
+                        </h2>
+                    </a>
+                    <label class="flex flex-col min-w-40 !h-10 max-w-64">
+                        <div class="flex w-full flex-1 items-stretch rounded-lg h-full">
+                            <div
+                                class="text-[#60758a] flex border-none bg-[#f0f2f5] dark:bg-gray-800 items-center justify-center pl-4 rounded-l-lg border-r-0">
+                                <span class="material-symbols-outlined">search</span>
+                            </div>
+                            <input
+                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#111418] dark:text-white focus:outline-0 focus:ring-0 border-none bg-[#f0f2f5] dark:bg-gray-800 focus:border-none h-full placeholder:text-[#60758a] px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal leading-normal"
+                                placeholder="Search settings" value="" />
+                        </div>
+                    </label>
+                </div>
+                <div class="flex flex-1 justify-end gap-4 md:gap-8 items-center">
+                    <div class="hidden md:flex items-center gap-8">
+                        <a class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                            href="/dashboard">Home</a>
+                        <a class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                            href="/messages">Messages</a>
+                        <a class="text-[#111418] dark:text-gray-300 text-sm font-medium leading-normal hover:text-primary transition-colors"
+                            href="/notifications">Notifications</a>
+                        <a class="text-primary text-sm font-bold leading-normal" href="/settings">Settings</a>
+                    </div>
+                    <label
+                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20 cursor-pointer active:scale-95 transition-transform"
+                        for="account-sidebar-toggle"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'></label>
+                </div>
+            </div>
+        </header>
+        <main class="flex-1 flex justify-center py-6 px-4 md:px-10">
+            <div class="max-w-[1200px] w-full flex flex-col md:flex-row gap-8">
+                <!-- Left Sidebar Navigation -->
+                <aside class="w-full md:w-80 flex flex-col gap-4">
+                    <div
+                        class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-[#f0f2f5] dark:border-gray-800 overflow-hidden">
+                        <div class="p-6 border-b border-[#f0f2f5] dark:border-gray-800">
+                            <h1 class="text-[#111418] dark:text-white text-lg font-bold">Settings</h1>
+                            <p class="text-[#60758a] text-sm font-normal">Manage your account and privacy</p>
+                        </div>
+                        <nav class="p-2 flex flex-col gap-1">
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                href="#">
+                                <span
+                                    class="material-symbols-outlined text-[#60758a] group-hover:text-primary">person</span>
+                                <span class="text-[#111418] dark:text-gray-200 text-sm font-medium">Account
+                                    Center</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                href="#">
+                                <span
+                                    class="material-symbols-outlined text-[#60758a] group-hover:text-primary">security</span>
+                                <span class="text-[#111418] dark:text-gray-200 text-sm font-medium">Security and
+                                    Login</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg active-nav group" href="#">
+                                <span class="material-symbols-outlined">lock</span>
+                                <span class="text-sm font-bold">Privacy</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                href="#">
+                                <span
+                                    class="material-symbols-outlined text-[#60758a] group-hover:text-primary">block</span>
+                                <span class="text-[#111418] dark:text-gray-200 text-sm font-medium">Blocking</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                href="#">
+                                <span
+                                    class="material-symbols-outlined text-[#60758a] group-hover:text-primary">notifications</span>
+                                <span class="text-[#111418] dark:text-gray-200 text-sm font-medium">Notifications</span>
+                            </a>
+                            <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                href="#">
+                                <span
+                                    class="material-symbols-outlined text-[#60758a] group-hover:text-primary">language</span>
+                                <span class="text-[#111418] dark:text-gray-200 text-sm font-medium">Language</span>
+                            </a>
+                        </nav>
+                        <div class="p-4 bg-primary/5 mt-4">
+                            <p class="text-[11px] uppercase tracking-wider text-[#60758a] font-bold mb-2">Help & Support
+                            </p>
+                            <a class="text-sm text-primary font-medium hover:underline" href="#">Help Center</a>
+                        </div>
+                    </div>
+                </aside>
+                <!-- Main Content Area -->
+                <div class="flex-1 flex flex-col gap-6">
+                    <!-- Page Heading -->
+                    <div
+                        class="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-sm border border-[#f0f2f5] dark:border-gray-800">
+                        <div class="flex flex-col gap-2">
+                            <h2
+                                class="text-[#111418] dark:text-white text-3xl font-black leading-tight tracking-[-0.033em]">
+                                Privacy Settings</h2>
+                            <p class="text-[#60758a] text-base font-normal">Control who can see your activity and how
+                                people find you on SocialCircle.</p>
+                        </div>
+                    </div>
+                    <!-- Privacy Sections -->
+                    <div class="flex flex-col gap-6">
+                        <!-- Your Activity Section -->
+                        <div
+                            class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-[#f0f2f5] dark:border-gray-800 overflow-hidden">
+                            <div
+                                class="px-6 py-4 border-b border-[#f0f2f5] dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
+                                <h3 class="text-[#111418] dark:text-white text-lg font-bold">Your Activity</h3>
+                                <span class="material-symbols-outlined text-[#60758a]">history</span>
+                            </div>
+                            <div class="divide-y divide-[#f0f2f5] dark:divide-gray-800">
+                                <!-- Future Posts -->
+                                <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div class="flex flex-col gap-1 max-w-md">
+                                        <p class="text-[#111418] dark:text-white font-semibold">Who can see your future
+                                            posts?</p>
+                                        <p class="text-[#60758a] text-sm">Any new posts you make will default to this
+                                            audience unless you change it per-post.</p>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <select
+                                            class="form-select bg-[#f0f2f5] dark:bg-gray-800 border-none rounded-lg text-sm font-medium focus:ring-primary">
+                                            <option>Public</option>
+                                            <option selected="">Friends</option>
+                                            <option>Friends except...</option>
+                                            <option>Only Me</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Past Posts -->
+                                <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div class="flex flex-col gap-1 max-w-md">
+                                        <p class="text-[#111418] dark:text-white font-semibold">Limit the audience for
+                                            past posts</p>
+                                        <p class="text-[#60758a] text-sm">Change all previous "Public" or "Friends of
+                                            Friends" posts to "Friends" only.</p>
+                                    </div>
+                                    <button
+                                        class="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-[#111418] dark:text-white rounded-lg text-sm font-bold transition-colors">
+                                        Limit Past Posts
+                                    </button>
+                                </div>
+                                <!-- Following Visibility -->
+                                <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div class="flex flex-col gap-1 max-w-md">
+                                        <p class="text-[#111418] dark:text-white font-semibold">Who can see the people,
+                                            Pages and lists you follow?</p>
+                                        <p class="text-[#60758a] text-sm">This controls the visibility of your
+                                            "Following" list on your profile.</p>
+                                    </div>
+                                    <select
+                                        class="form-select bg-[#f0f2f5] dark:bg-gray-800 border-none rounded-lg text-sm font-medium focus:ring-primary">
+                                        <option>Public</option>
+                                        <option>Friends</option>
+                                        <option selected="">Only Me</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- How People Find and Contact You Section -->
+                        <div
+                            class="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-[#f0f2f5] dark:border-gray-800 overflow-hidden">
+                            <div
+                                class="px-6 py-4 border-b border-[#f0f2f5] dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/50">
+                                <h3 class="text-[#111418] dark:text-white text-lg font-bold">How People Find and Contact
+                                    You</h3>
+                                <span class="material-symbols-outlined text-[#60758a]">contacts</span>
+                            </div>
+                            <div class="divide-y divide-[#f0f2f5] dark:divide-gray-800">
+                                <!-- Friend Requests -->
+                                <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div class="flex flex-col gap-1 max-w-md">
+                                        <p class="text-[#111418] dark:text-white font-semibold">Who can send you friend
+                                            requests?</p>
+                                        <p class="text-[#60758a] text-sm">Decide who is allowed to reach out and connect
+                                            with you.</p>
+                                    </div>
+                                    <select
+                                        class="form-select bg-[#f0f2f5] dark:bg-gray-800 border-none rounded-lg text-sm font-medium focus:ring-primary">
+                                        <option selected="">Everyone</option>
+                                        <option>Friends of friends</option>
+                                    </select>
+                                </div>
+                                <!-- Email Lookup -->
+                                <div class="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                    <div class="flex flex-col gap-1 max-w-md">
+                                        <p class="text-[#111418] dark:text-white font-semibold">Who can look you up
+                                            using the email address you provided?</p>
+                                        <p class="text-[#60758a] text-sm">Allow people to find you if they already have
+                                            your email.</p>
+                                    </div>
+                                    <select
+                                        class="form-select bg-[#f0f2f5] dark:bg-gray-800 border-none rounded-lg text-sm font-medium focus:ring-primary">
+                                        <option>Everyone</option>
+                                        <option selected="">Friends</option>
+                                        <option>Only Me</option>
+                                    </select>
+                                </div>
+                                <!-- Search Engine Link -->
+                                <div class="p-6 flex items-center justify-between gap-4">
+                                    <div class="flex flex-col gap-1 max-w-md">
+                                        <p class="text-[#111418] dark:text-white font-semibold">Do you want search
+                                            engines outside of SocialCircle to link to your profile?</p>
+                                        <p class="text-[#60758a] text-sm">When this is on, search engines like Google
+                                            may show a link to your profile.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input checked="" class="sr-only peer" type="checkbox" value="" />
+                                        <div
+                                            class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary">
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Extra Safety Section -->
+                        <div class="bg-primary/5 rounded-xl border border-primary/20 p-6 flex items-start gap-4">
+                            <div class="p-2 bg-primary/20 rounded-lg text-primary">
+                                <span class="material-symbols-outlined">verified_user</span>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-[#111418] dark:text-white font-bold mb-1">Privacy Checkup</h4>
+                                <p class="text-[#60758a] text-sm mb-4">We'll guide you through some of the most
+                                    important privacy settings so you can make the best choices for your account.</p>
+                                <button class="text-primary text-sm font-bold hover:underline flex items-center gap-1">
+                                    Start Checkup <span class="material-symbols-outlined text-sm">chevron_right</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer
+            class="mt-auto border-t border-[#f0f2f5] dark:border-gray-800 bg-white dark:bg-background-dark py-8 px-10 text-center">
+            <div class="flex flex-wrap justify-center gap-6 mb-4">
+                <a class="text-[#60758a] text-xs hover:underline" href="#">Privacy Policy</a>
+                <a class="text-[#60758a] text-xs hover:underline" href="#">Terms of Service</a>
+                <a class="text-[#60758a] text-xs hover:underline" href="#">Cookie Policy</a>
+                <a class="text-[#60758a] text-xs hover:underline" href="#">Accessibility</a>
+                <a class="text-[#60758a] text-xs hover:underline" href="#">Ad Choices</a>
+            </div>
+            <p class="text-[#60758a] text-xs">© 2024 SocialCircle Inc. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

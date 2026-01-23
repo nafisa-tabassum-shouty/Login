@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Messages - SocialApp</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#258cf4",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style type="text/tailwindcss">
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav {
+            background-color: #f0f2f5;
+        }
+        .dark .active-nav {
+            background-color: rgba(37, 140, 244, 0.2);
+        }
+        .message-bubble-sent {
+            @apply bg-primary text-white rounded-2xl rounded-tr-none;
+        }
+        .message-bubble-received {
+            @apply bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white rounded-2xl rounded-tl-none;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark text-[#111418] dark:text-white transition-colors duration-200 overflow-hidden">
+    <div class="flex flex-col h-screen">
+        <header
+            class="shrink-0 z-50 w-full bg-white dark:bg-[#1a242f] border-b border-[#f0f2f5] dark:border-slate-700 px-4 md:px-10 py-3">
+            <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4 text-primary">
+                    <a href="/dashboard" class="size-8">
+                        <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M8.57829 8.57829C5.52816 11.6284 3.451 15.5145 2.60947 19.7452C1.76794 23.9758 2.19984 28.361 3.85056 32.3462C5.50128 36.3314 8.29667 39.7376 11.8832 42.134C15.4698 44.5305 19.6865 45.8096 24 45.8096C28.3135 45.8096 32.5302 44.5305 36.1168 42.134C39.7033 39.7375 42.4987 36.3314 44.1494 32.3462C45.8002 28.361 46.2321 23.9758 45.3905 19.7452C44.549 15.5145 42.4718 11.6284 39.4217 8.57829L24 24L8.57829 8.57829Z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </a>
+                    <h2
+                        class="text-[#111418] dark:text-white text-xl font-bold leading-tight tracking-tight hidden sm:block">
+                        SocialApp</h2>
+                </div>
+                <div class="flex-1 max-w-xl">
+                    <label class="relative flex items-center">
+                        <span class="absolute left-4 text-[#60758a] material-symbols-outlined">search</span>
+                        <input
+                            class="w-full h-10 pl-11 pr-4 rounded-lg border-none bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white placeholder:text-[#60758a] focus:ring-2 focus:ring-primary/50"
+                            placeholder="Search messages..." type="text" />
+                    </label>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button
+                        class="flex size-10 items-center justify-center rounded-lg bg-[#f0f2f5] dark:bg-slate-800 text-[#111418] dark:text-white hover:bg-slate-200 dark:hover:bg-slate-700"
+                        onclick="document.documentElement.classList.toggle('dark')">
+                        <span class="material-symbols-outlined">dark_mode</span>
+                    </button>
+                    <a href="/profile"
+                        class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-primary/20"
+                        style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'></a>
+                </div>
+            </div>
+        </header>
+        <main class="flex-1 max-w-[1440px] mx-auto w-full flex overflow-hidden">
+            <aside
+                class="w-full md:w-[350px] lg:w-[400px] border-r border-[#f0f2f5] dark:border-slate-700 bg-white dark:bg-[#1a242f] flex flex-col h-full shrink-0">
+                <div class="p-4 border-b border-[#f0f2f5] dark:border-slate-700">
+                    <div class="flex items-center justify-between mb-4">
+                        <h1 class="text-xl font-bold">Messages</h1>
+                        <button class="p-2 rounded-full hover:bg-[#f0f2f5] dark:hover:bg-slate-800 text-primary">
+                            <span class="material-symbols-outlined">edit_square</span>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <span
+                            class="absolute left-3 top-1/2 -translate-y-1/2 text-[#60758a] material-symbols-outlined text-xl">search</span>
+                        <input
+                            class="w-full h-10 pl-10 pr-4 bg-[#f0f2f5] dark:bg-slate-800 border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/50"
+                            placeholder="Search for people" type="text" />
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto">
+                    <!-- Chat List Items -->
+                    <div
+                        class="p-4 flex gap-3 cursor-pointer hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors border-l-4 border-primary bg-primary/5 dark:bg-primary/10">
+                        <div class="relative shrink-0">
+                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9tcAEzaLl9nA-zzy2_QReSKwAjNTnFi8RyDa85w1s3ko7NEUYsDNRWioGinCwjz09O4J-83fOoDNRBDoEQ7GZk8SsQzMtMCBsKchsNyiUBD1yVuYGWRk3S5A3dTLEem8EYOP1qIF3kO_730-HqFdQSylD34vO-j6zlVgY4GGW3omxD088lMYKv3dQ5vnxwS3lIx105f6bGV-SFgJXAGsa9XqxcY_hmnHahZnYo2BlWNGGO_KEsnA3FE2eJ1GqyyQutbIpJxPQK04");'>
+                            </div>
+                            <div
+                                class="absolute bottom-0 right-0 size-3.5 bg-green-500 border-2 border-white dark:border-[#1a242f] rounded-full">
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-0.5">
+                                <h4 class="font-bold text-sm truncate">Jordan Smith</h4>
+                                <span class="text-xs text-[#60758a]">12:45 PM</span>
+                            </div>
+                            <p class="text-sm text-[#111418] dark:text-white font-semibold truncate">The new design
+                                looks
+                                great!</p>
+                        </div>
+                    </div>
+                    <!-- More mock chats -->
+                    <div
+                        class="p-4 flex gap-3 cursor-pointer hover:bg-[#f0f2f5] dark:hover:bg-slate-800 transition-colors">
+                        <div class="relative shrink-0">
+                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-12"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAdQh1h3EgufXpna7mYPFBtSLqjyYNQ3uc-8a0A_5PqOFmHdmp3oV6xx2mxNI2DaUaItUfDd681MB1pbMcP8WYbqqpeFta2fpU-MWnV6-LNmPHFVKQi9iNNOMdYnx0BJsZq_8OgRHqSuBSvid-SsUbGHRzGnwoM-tQG3SJn1IFmOZwO-4PPgxvnxpCOHuGnuFVeUIWY8qQ0TPtjDGguu41wK--EsaQcZxiJZezhNGVfbB20Lz4ol9xgyiYYhdN0UfbAIEYrkfmm6No");'>
+                            </div>
+                            <div
+                                class="absolute bottom-0 right-0 size-3.5 bg-slate-300 dark:bg-slate-600 border-2 border-white dark:border-[#1a242f] rounded-full">
+                            </div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-center mb-0.5">
+                                <h4 class="font-bold text-sm truncate">Sarah Chen</h4>
+                                <span class="text-xs text-[#60758a]">2h ago</span>
+                            </div>
+                            <p class="text-sm text-[#60758a] truncate">I've sent the updated documentation for the
+                                engineering
+                                team.</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            <section class="flex-1 flex flex-col h-full bg-white dark:bg-[#101922] relative">
+                <div
+                    class="h-[72px] shrink-0 border-b border-[#f0f2f5] dark:border-slate-700 px-6 flex items-center justify-between bg-white dark:bg-[#1a242f]">
+                    <div class="flex items-center gap-3">
+                        <div class="relative shrink-0">
+                            <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
+                                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9tcAEzaLl9nA-zzy2_QReSKwAjNTnFi8RyDa85w1s3ko7NEUYsDNRWioGinCwjz09O4J-83fOoDNRBDoEQ7GZk8SsQzMtMCBsKchsNyiUBD1yVuYGWRk3S5A3dTLEem8EYOP1qIF3kO_730-HqFdQSylD34vO-j6zlVgY4GGW3omxD088lMYKv3dQ5vnxwS3lIx105f6bGV-SFgJXAGsa9XqxcY_hmnHahZnYo2BlWNGGO_KEsnA3FE2eJ1GqyyQutbIpJxPQK04");'>
+                            </div>
+                            <div
+                                class="absolute bottom-0 right-0 size-2.5 bg-green-500 border-2 border-white dark:border-[#1a242f] rounded-full">
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <h3 class="font-bold text-base leading-none">Jordan Smith</h3>
+                            <p class="text-xs text-green-500 font-medium">Online</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button
+                            class="p-2 rounded-full hover:bg-[#f0f2f5] dark:hover:bg-slate-800 text-[#60758a] transition-colors">
+                            <span class="material-symbols-outlined">call</span>
+                        </button>
+                        <button
+                            class="p-2 rounded-full hover:bg-[#f0f2f5] dark:hover:bg-slate-800 text-[#60758a] transition-colors">
+                            <span class="material-symbols-outlined">videocam</span>
+                        </button>
+                        <button
+                            class="p-2 rounded-full hover:bg-[#f0f2f5] dark:hover:bg-slate-800 text-[#60758a] transition-colors">
+                            <span class="material-symbols-outlined">info</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+                    <div class="flex justify-center">
+                        <span
+                            class="px-3 py-1 bg-[#f0f2f5] dark:bg-slate-800 rounded-full text-[10px] font-bold text-[#60758a] uppercase tracking-wider">Today</span>
+                    </div>
+                    <div class="flex items-start gap-3 max-w-[80%]">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 shrink-0"
+                            style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB9tcAEzaLl9nA-zzy2_QReSKwAjNTnFi8RyDa85w1s3ko7NEUYsDNRWioGinCwjz09O4J-83fOoDNRBDoEQ7GZk8SsQzMtMCBsKchsNyiUBD1yVuYGWRk3S5A3dTLEem8EYOP1qIF3kO_730-HqFdQSylD34vO-j6zlVgY4GGW3omxD088lMYKv3dQ5vnxwS3lIx105f6bGV-SFgJXAGsa9XqxcY_hmnHahZnYo2BlWNGGO_KEsnA3FE2eJ1GqyyQutbIpJxPQK04");'>
+                        </div>
+                        <div>
+                            <div class="message-bubble-received p-3 shadow-sm">
+                                <p class="text-sm">Hey Alex! Did you have a chance to look at the new design system
+                                    components I shared yesterday?</p>
+                            </div>
+                            <span class="text-[10px] text-[#60758a] mt-1 ml-1">12:30 PM</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 max-w-[80%] self-end flex-row-reverse">
+                        <div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 shrink-0"
+                            style='background-image: url("/uploads/<%= user.profile_picture || "default-profile.png" %>");'>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <div class="message-bubble-sent p-3 shadow-sm">
+                                <p class="text-sm">Hey Jordan! Yes, I just went through them. The spacing and typography
+                                    look
+                                    much more consistent now.</p>
+                            </div>
+                            <span class="text-[10px] text-[#60758a] mt-1 mr-1">12:34 PM</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 max-w-[80%] self-end flex-row-reverse">
+                        <div
+                            class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 shrink-0 invisible">
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <div class="message-bubble-sent p-3 shadow-sm">
+                                <p class="text-sm">Especially the dark mode implementation. The slate-800 background is
+                                    perfect.</p>
+                            </div>
+                            <span class="text-[10px] text-[#60758a] mt-1 mr-1">12:35 PM</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4 border-t border-[#f0f2f5] dark:border-slate-700 bg-white dark:bg-[#1a242f]">
+                    <div class="flex items-end gap-2 bg-[#f0f2f5] dark:bg-slate-800 rounded-2xl p-2 px-3">
+                        <div class="flex items-center gap-1 shrink-0 pb-1">
+                            <button class="p-1.5 text-[#60758a] hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined">attach_file</span>
+                            </button>
+                            <button class="p-1.5 text-[#60758a] hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined">image</span>
+                            </button>
+                        </div>
+                        <textarea
+                            class="flex-1 bg-transparent border-none focus:ring-0 resize-none py-2 text-sm max-h-32 placeholder:text-[#60758a]"
+                            placeholder="Write a message..." rows="1"></textarea>
+                        <div class="flex items-center gap-1 shrink-0 pb-1">
+                            <button class="p-1.5 text-[#60758a] hover:text-primary transition-colors">
+                                <span class="material-symbols-outlined">mood</span>
+                            </button>
+                            <button
+                                class="bg-primary text-white size-9 rounded-xl flex items-center justify-center hover:bg-primary/90 transition-all shadow-sm">
+                                <span class="material-symbols-outlined text-[20px]">send</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+</body>
+
+</html>
