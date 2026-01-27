@@ -322,6 +322,66 @@
                         </div>
                     </div>
 
+                    <!-- Scraped Data Table Section -->
+                    <div class="mt-8 mb-20">
+                        <div
+                            class="w-full bg-white dark:bg-slate-800 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-700 p-10">
+                            <div
+                                class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-4">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Live Scraping Report
+                                    </h2>
+                                    <p class="text-base text-slate-500 dark:text-slate-400 mt-1">Detailed inventory of
+                                        products and pages indexed from Daraz.</p>
+                                </div>
+                                <button onclick="fetchScrapedData()"
+                                    class="bg-primary hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-xl transition-all shadow-md hover:shadow-primary/20 active:scale-95 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-xl">database</span>
+                                    <span>Sync Scraped Data</span>
+                                </button>
+                            </div>
+
+                            <div class="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-700">
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left">
+                                        <thead class="bg-slate-50 dark:bg-slate-900/50">
+                                            <tr>
+                                                <th
+                                                    class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                                    Page Source</th>
+                                                <th
+                                                    class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                                    URL Context</th>
+                                                <th
+                                                    class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-center">
+                                                    Products</th>
+                                                <th
+                                                    class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest text-center">
+                                                    JFY</th>
+                                                <th
+                                                    class="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                                                    Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="scrapedDataTableBody"
+                                            class="divide-y divide-slate-100 dark:divide-slate-700">
+                                            <tr>
+                                                <td colspan="5" class="px-6 py-12 text-center">
+                                                    <div class="flex flex-col items-center gap-3">
+                                                        <span
+                                                            class="material-symbols-outlined text-slate-300 text-4xl">cloud_download</span>
+                                                        <p class="text-slate-400 font-medium">Click "Sync Scraped Data"
+                                                            to visualize current progress</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <script>
                         // CRUD Test Logic
                         const snippetInput = document.getElementById('snippetInput');
@@ -435,6 +495,64 @@
                                 spinner.classList.add('hidden');
                                 status.innerText = "Analysis Failed";
                                 status.className = "font-bold text-lg text-red-600";
+                                console.error(err);
+                            }
+                        }
+
+                        // Scraped Data Fetching Logic
+                        async function fetchScrapedData() {
+                            const tableBody = document.getElementById('scrapedDataTableBody');
+                            tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400">Loading indexed data...</td></tr>';
+
+                            try {
+                                const res = await fetch('/marketing-insights/scraped-data');
+                                const response = await res.json();
+
+                                if (response.success && response.data) {
+                                    if (response.data.length === 0) {
+                                        tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400">No data found in daraz_data.json.</td></tr>';
+                                        return;
+                                    }
+
+                                    tableBody.innerHTML = '';
+                                    response.data.forEach((item, index) => {
+                                        const tr = document.createElement('tr');
+                                        tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors";
+                                        tr.innerHTML = `
+                                            <td class="px-6 py-4">
+                                                <div class="flex flex-col">
+                                                    <span class="text-sm font-bold text-slate-700 dark:text-white truncate max-w-[200px]">${item.title || 'Untitled Page'}</span>
+                                                    <span class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">Daraz Scraper v1.0</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 text-xs text-blue-500 hover:underline truncate max-w-[250px]">
+                                                <a href="${item.url}" target="_blank" class="flex items-center gap-1">
+                                                    ${item.url}
+                                                    <span class="material-symbols-outlined text-[12px]">open_in_new</span>
+                                                </a>
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                                                    ${item.products ? item.products.length : 0} Items
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                                    ${item.justForYou ? item.justForYou.length : 0} Items
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="size-2 rounded-full bg-green-500"></span>
+                                                    <span class="text-xs font-semibold text-slate-600 dark:text-slate-400">Indexed</span>
+                                                </div>
+                                            </td>
+                                        `;
+                                        tableBody.appendChild(tr);
+                                    });
+                                }
+                            } catch (err) {
+                                tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-12 text-center text-red-400 font-bold">Failed to synchronize with scraper output.</td></tr>';
                                 console.error(err);
                             }
                         }

@@ -17,6 +17,7 @@ router.get('/marketing-insights', marketingController.getMarketingInsights);
 router.post('/marketing-insights/snippet', marketingController.saveSnippet);
 router.get('/marketing-insights/snippet', marketingController.getLatestSnippet);
 router.post('/marketing-insights/scrap', marketingController.scrapWebsite);
+router.get('/marketing-insights/scraped-data', marketingController.getScrapedData);
 
 
 

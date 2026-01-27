@@ -1,5 +1,7 @@
 const db = require('../config/postgresDb');
 const User = require('../models/User'); // Mongoose Model
+const fs = require('fs');
+const path = require('path');
 
 exports.getMarketingInsights = async (req, res) => {
     // 1. Authentication / Identity Check (Uses MongoDB)
@@ -155,5 +157,25 @@ exports.scrapWebsite = async (req, res) => {
     } catch (err) {
         console.error(`❌ Error scraping ${source}:`, err.message);
         res.status(500).json({ error: 'Failed to scrape website', details: err.message });
+    }
+};
+
+exports.getScrapedData = async (req, res) => {
+    if (!req.user && !req.session.userId) return res.status(401).json({ error: 'Unauthorized' });
+
+    try {
+        const filePath = path.join(__dirname, '../../DarazScraper/daraz_data.json');
+
+        if (!fs.existsSync(filePath)) {
+            return res.json({ success: true, data: [] }); // Return empty if file doesn't exist yet
+        }
+
+        const rawData = fs.readFileSync(filePath, 'utf8');
+        const data = JSON.parse(rawData);
+
+        res.json({ success: true, data });
+    } catch (err) {
+        console.error('❌ Error reading scraped data:', err.message);
+        res.status(500).json({ error: 'Failed to read scraped data' });
     }
 };
